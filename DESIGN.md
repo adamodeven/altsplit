@@ -244,41 +244,46 @@ the Liquid Glass APIs moved between betas.
 
 ## Accountability
 
-iOS 26 offers a materially better primitive than earlier versions.
+All reminders go through a single `ReminderScheduler` protocol. The backing
+implementation is swappable because the best available mechanism depends on
+the developer account tier, and that will change once the membership is
+bought.
 
-### AlarmKit — the hard tier
+### v1 implementation — notification cascade
+
+`UNUserNotificationCenter`, with an **escalating cascade** for anything that
+matters: schedule 3–4 notifications at widening intervals (e.g. 18:00, 19:30,
+21:00) and cancel the remainder the instant the task is checked off. One
+notification is trivially ignored. Three that keep coming back is
+accountability.
+
+- **Workout** — cascade on training days.
+- **Weigh-in** — cascade on the Monday opening each cycle.
+- **Protein / creatine** — evening, with **notification actions** so they can
+  be checked off without launching the app.
+- **Focus reconfirmation** — every 4 weeks.
+- **Cycle review** — end of each B-week.
+
+### v2 implementation — AlarmKit
 
 `AlarmKit` (new in iOS 26) schedules real alarms: they break through silent
 mode and Focus, present alarm-style UI, and support a countdown plus custom
-actions — without the Critical Alerts entitlement Apple will not grant a
-personal app. This is the correct mechanism for the things that must not be
-missed.
+actions. It is a much stronger primitive than a notification and is the right
+long-term answer for workout start and weigh-in mornings, with the alarm
+cancelling the moment the task completes.
 
-Use alarms for:
-
-- **Workout start** on training days.
-- **Weigh-in morning** at the start of each A-week.
-
-An alarm's action should deep-link straight into the relevant screen, and the
-alarm cancels the moment the task is completed.
-
-### Notifications — the soft tier
-
-Standard `UNUserNotificationCenter` for things that deserve a nudge but not a
-klaxon:
-
-- Protein / creatine, evening, with **notification actions** so they can be
-  checked off without launching the app.
-- Focus reconfirmation every 4 weeks.
-- Cycle review at the end of each B-week.
-
-An escalating cascade (schedule 3, cancel the remainder on completion) still
-applies here, but it is now the fallback tier rather than the main event.
+**It requires a paid developer membership.** `com.apple.developer.alarmkit`
+is a restricted entitlement that a personal team cannot be issued — automatic
+signing fails outright with the entitlement present. So it sits behind the
+protocol until the $99 is paid, and the cascade covers the interim.
 
 ### Badge
 
 Badge count = open items today (workout not logged, supplements not taken,
 check-in due). Set via `UNUserNotificationCenter.setBadgeCount(_:)`.
+
+Available on any account tier, and worth leaning on: a badge reliably pulls
+you into the app in a way a dismissed notification does not.
 
 ### Honesty
 
@@ -371,17 +376,25 @@ would hurt readability for every series in this app.
 - iOS 26 minimum
 - Local-first, no server, no accounts
 - Swift Charts for the progress tab
-- AlarmKit for the hard reminder tier
+- `UserNotifications` behind a `ReminderScheduler` protocol, with AlarmKit as
+  the v2 implementation
 - App icon built in Icon Composer, so it renders correctly with the Liquid
   Glass icon treatment (clear / tinted / dark variants)
 
 ### Provisioning
 
-Free provisioning covers all of v1: the app, SwiftData, local notifications,
-and AlarmKit.
+Free provisioning (personal team) covers: the app itself, SwiftData, standard
+local notifications with actions, and badge counts. That is enough for all of
+v1.
 
-It does not cover App Groups (and therefore widgets and Control Center
-controls), HealthKit, or CloudKit. It also requires re-signing every 7 days,
+It does **not** cover restricted entitlements. Confirmed the hard way —
+`com.apple.developer.alarmkit` cannot be issued to a personal team, and
+automatic signing fails outright rather than degrading gracefully. The same
+applies to App Groups (and therefore widgets and Control Center controls),
+HealthKit, and CloudKit.
+
+**Rule of thumb: if a capability needs an entitlement, assume it needs the
+paid membership.** Free provisioning also requires re-signing every 7 days,
 which is disqualifying long-term for an app meant to be relied on daily — so
 the $99 is a "when I start living in it" purchase, not a "before I start"
 purchase.
@@ -397,12 +410,13 @@ purchase.
 - Active workout logger (lift / hold / bodyweight)
 - Supplement toggles
 - Weight + photo check-in with onion-skin
-- AlarmKit alarms + notification soft tier + badge
+- Escalating notification cascade behind `ReminderScheduler`, plus badge
 - Builder: split editor and exercise library
 - Progress: body and lifting
 
 **v2 — after the $99**
 
+- AlarmKit as the `ReminderScheduler` implementation
 - Widgets and Control Center controls
 - **Live Activity on weigh-in days**, persisting until the check-in is
   recorded
