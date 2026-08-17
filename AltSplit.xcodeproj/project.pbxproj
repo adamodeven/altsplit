@@ -7,19 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		036CC31EED59A96321978720 /* CheckInBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154C894836A16F5B4C8F61E9 /* CheckInBox.swift */; };
+		04220B037FDA541CB02915E4 /* ProgressTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D41DDFCD179ECFC5D2EA5EC4 /* ProgressTabView.swift */; };
 		367189C454C7997AE1482F5E /* DefaultProgramTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD8D3BD578473B2AEF506384 /* DefaultProgramTests.swift */; };
 		3E3EBCE22BB2C4FB809052C0 /* PhaseCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D557A6224E6DDEBAC95BF109 /* PhaseCalculator.swift */; };
 		61FAD7DE7A755C299769B011 /* ExerciseLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13840D4D3FA4426A499F87 /* ExerciseLibrary.swift */; };
+		62D2FD880CF95F2C178F4783 /* WorkoutSessionStubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1738DA046A6571AA9A0AAF /* WorkoutSessionStubView.swift */; };
 		645D423657905C064C35D180 /* PhaseCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 622874269A9F5747E7F0BB2B /* PhaseCalculatorTests.swift */; };
 		67747728053A07C97B16835B /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A33C0A24A497A123EDFC275 /* Models.swift */; };
 		7440C6FD8C2BAD1E30DACAC9 /* AltSplitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FD7E2C25B6AECB9F3FEC66 /* AltSplitApp.swift */; };
-		7754F7A5C457A56942C26CA4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95E05C805FB34D51BD9E5E8 /* ContentView.swift */; };
+		77D272D1ED062CDCD6FCD4F4 /* AppTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57784C58910020F5C2B5A9D6 /* AppTab.swift */; };
+		7A34B73D0B8634D74200DEFD /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD846500C354E83FD59E19E7 /* RootTabView.swift */; };
 		7A48A2B46E36373BCABD22A6 /* DayResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE02918BC23F5D2F83AE9FE /* DayResolverTests.swift */; };
+		848A3543F303FDEB56964472 /* SupplementBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B62E2E2D9CFD35602C7AB3 /* SupplementBox.swift */; };
+		93C2E21A5DBD22EC59ECD125 /* WorkoutBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F07564B78F5A1BB94470B70 /* WorkoutBox.swift */; };
+		9948F94BA35A2C340B141CF2 /* CheckInCaptureStubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A7E0C2358CDC3D01160DA84 /* CheckInCaptureStubView.swift */; };
+		A0A33254AD3995BFCB12985A /* WorkoutPreviewList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04AB75E480BA12CF305BAA56 /* WorkoutPreviewList.swift */; };
+		B32400B5DFE4B9564B9E76CF /* BuilderTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA045831C7B607C143293D7F /* BuilderTabView.swift */; };
 		BB196E0BC394AFEC3397D8CB /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E286DFE81B18BB1B82C6AA /* Enums.swift */; };
 		CC6E193DCE2166CDC6B73910 /* DayResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298BE7F823E5773A75C90ACA /* DayResolver.swift */; };
 		DC6AF587AF9F4C90693C9D3E /* ExerciseLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66118DA20D8A9068D952A67 /* ExerciseLibraryTests.swift */; };
 		EF1273B770998F14441D2BA2 /* AppSeeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3355095682FF870374549BA5 /* AppSeeder.swift */; };
 		F657D4D1BEFC2F1D55FB153A /* DefaultProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3770836EA904378275E6A532 /* DefaultProgram.swift */; };
+		F663848F34ED64E74CDF2F76 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3702EAA81564675FF409E19C /* HomeView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,18 +43,28 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		04AB75E480BA12CF305BAA56 /* WorkoutPreviewList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutPreviewList.swift; sourceTree = "<group>"; };
 		0C13840D4D3FA4426A499F87 /* ExerciseLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseLibrary.swift; sourceTree = "<group>"; };
+		0F07564B78F5A1BB94470B70 /* WorkoutBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutBox.swift; sourceTree = "<group>"; };
+		154C894836A16F5B4C8F61E9 /* CheckInBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInBox.swift; sourceTree = "<group>"; };
 		298BE7F823E5773A75C90ACA /* DayResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayResolver.swift; sourceTree = "<group>"; };
 		3355095682FF870374549BA5 /* AppSeeder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSeeder.swift; sourceTree = "<group>"; };
+		3702EAA81564675FF409E19C /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		3770836EA904378275E6A532 /* DefaultProgram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultProgram.swift; sourceTree = "<group>"; };
 		4A33C0A24A497A123EDFC275 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		57784C58910020F5C2B5A9D6 /* AppTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTab.swift; sourceTree = "<group>"; };
+		5A7E0C2358CDC3D01160DA84 /* CheckInCaptureStubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInCaptureStubView.swift; sourceTree = "<group>"; };
+		5F1738DA046A6571AA9A0AAF /* WorkoutSessionStubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSessionStubView.swift; sourceTree = "<group>"; };
 		622874269A9F5747E7F0BB2B /* PhaseCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseCalculatorTests.swift; sourceTree = "<group>"; };
 		78DD64093289BE30C18D3477 /* AltSplit.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AltSplit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9EE02918BC23F5D2F83AE9FE /* DayResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayResolverTests.swift; sourceTree = "<group>"; };
 		A1FD7E2C25B6AECB9F3FEC66 /* AltSplitApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AltSplitApp.swift; sourceTree = "<group>"; };
+		BD846500C354E83FD59E19E7 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
+		C5B62E2E2D9CFD35602C7AB3 /* SupplementBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementBox.swift; sourceTree = "<group>"; };
 		C66118DA20D8A9068D952A67 /* ExerciseLibraryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseLibraryTests.swift; sourceTree = "<group>"; };
-		C95E05C805FB34D51BD9E5E8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		D41DDFCD179ECFC5D2EA5EC4 /* ProgressTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressTabView.swift; sourceTree = "<group>"; };
 		D557A6224E6DDEBAC95BF109 /* PhaseCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseCalculator.swift; sourceTree = "<group>"; };
+		EA045831C7B607C143293D7F /* BuilderTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuilderTabView.swift; sourceTree = "<group>"; };
 		F4E286DFE81B18BB1B82C6AA /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		FD8D3BD578473B2AEF506384 /* DefaultProgramTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultProgramTests.swift; sourceTree = "<group>"; };
 		FD95BEB42B4DAEB01CEBD854 /* AltSplitTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AltSplitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -55,9 +75,32 @@
 			isa = PBXGroup;
 			children = (
 				A1FD7E2C25B6AECB9F3FEC66 /* AltSplitApp.swift */,
-				C95E05C805FB34D51BD9E5E8 /* ContentView.swift */,
+				57784C58910020F5C2B5A9D6 /* AppTab.swift */,
+				BD846500C354E83FD59E19E7 /* RootTabView.swift */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		28069DA45AA6FDA73F83555B /* Builder */ = {
+			isa = PBXGroup;
+			children = (
+				EA045831C7B607C143293D7F /* BuilderTabView.swift */,
+			);
+			path = Builder;
+			sourceTree = "<group>";
+		};
+		3BE888A94AAAF94EB30FB7CC /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				154C894836A16F5B4C8F61E9 /* CheckInBox.swift */,
+				5A7E0C2358CDC3D01160DA84 /* CheckInCaptureStubView.swift */,
+				3702EAA81564675FF409E19C /* HomeView.swift */,
+				C5B62E2E2D9CFD35602C7AB3 /* SupplementBox.swift */,
+				0F07564B78F5A1BB94470B70 /* WorkoutBox.swift */,
+				04AB75E480BA12CF305BAA56 /* WorkoutPreviewList.swift */,
+				5F1738DA046A6571AA9A0AAF /* WorkoutSessionStubView.swift */,
+			);
+			path = Home;
 			sourceTree = "<group>";
 		};
 		4116029C77FC4EE1CFED9C46 /* Products */ = {
@@ -103,8 +146,11 @@
 			isa = PBXGroup;
 			children = (
 				15632448802DBB3A73D8D25B /* App */,
+				28069DA45AA6FDA73F83555B /* Builder */,
 				C058DEFFC2FD99133AD35F19 /* Core */,
+				3BE888A94AAAF94EB30FB7CC /* Home */,
 				6649B40A7E85EC3FC1C7C4DF /* Models */,
+				DF1322C2D5594B937A8B5DFE /* Progress */,
 				4129FC477F1D3F7FA715419C /* Seed */,
 			);
 			path = AltSplit;
@@ -126,6 +172,14 @@
 				D557A6224E6DDEBAC95BF109 /* PhaseCalculator.swift */,
 			);
 			path = Core;
+			sourceTree = "<group>";
+		};
+		DF1322C2D5594B937A8B5DFE /* Progress */ = {
+			isa = PBXGroup;
+			children = (
+				D41DDFCD179ECFC5D2EA5EC4 /* ProgressTabView.swift */,
+			);
+			path = Progress;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -202,13 +256,23 @@
 			files = (
 				7440C6FD8C2BAD1E30DACAC9 /* AltSplitApp.swift in Sources */,
 				EF1273B770998F14441D2BA2 /* AppSeeder.swift in Sources */,
-				7754F7A5C457A56942C26CA4 /* ContentView.swift in Sources */,
+				77D272D1ED062CDCD6FCD4F4 /* AppTab.swift in Sources */,
+				B32400B5DFE4B9564B9E76CF /* BuilderTabView.swift in Sources */,
+				036CC31EED59A96321978720 /* CheckInBox.swift in Sources */,
+				9948F94BA35A2C340B141CF2 /* CheckInCaptureStubView.swift in Sources */,
 				CC6E193DCE2166CDC6B73910 /* DayResolver.swift in Sources */,
 				F657D4D1BEFC2F1D55FB153A /* DefaultProgram.swift in Sources */,
 				BB196E0BC394AFEC3397D8CB /* Enums.swift in Sources */,
 				61FAD7DE7A755C299769B011 /* ExerciseLibrary.swift in Sources */,
+				F663848F34ED64E74CDF2F76 /* HomeView.swift in Sources */,
 				67747728053A07C97B16835B /* Models.swift in Sources */,
 				3E3EBCE22BB2C4FB809052C0 /* PhaseCalculator.swift in Sources */,
+				04220B037FDA541CB02915E4 /* ProgressTabView.swift in Sources */,
+				7A34B73D0B8634D74200DEFD /* RootTabView.swift in Sources */,
+				848A3543F303FDEB56964472 /* SupplementBox.swift in Sources */,
+				93C2E21A5DBD22EC59ECD125 /* WorkoutBox.swift in Sources */,
+				A0A33254AD3995BFCB12985A /* WorkoutPreviewList.swift in Sources */,
+				62D2FD880CF95F2C178F4783 /* WorkoutSessionStubView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
