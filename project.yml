@@ -1,0 +1,56 @@
+name: AltSplit
+options:
+  bundleIdPrefix: com.adamodeven
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+configs:
+  Debug: debug
+  Release: release
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "26.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+targets:
+  AltSplit:
+    type: application
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: AltSplit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.adamodeven.AltSplit
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_CFBundleDisplayName: AltSplit
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+  AltSplitTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: AltSplitTests
+    dependencies:
+      - target: AltSplit
+        embed: false
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.adamodeven.AltSplitTests
+schemes:
+  AltSplit:
+    build:
+      targets:
+        AltSplit: all
+        AltSplitTests: [test]
+    test:
+      targets:
+        - AltSplitTests
+      config: Debug
+    run:
+      config: Debug
