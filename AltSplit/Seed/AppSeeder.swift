@@ -5,9 +5,16 @@ import SwiftData
 /// the app is usable on first launch.
 enum AppSeeder {
     static func seedIfNeeded(context: ModelContext) {
-        let hasProgram = (try? context.fetchCount(FetchDescriptor<Program>())) ?? 0 > 0
+        let hasProgram = ((try? context.fetchCount(FetchDescriptor<Program>())) ?? 0) > 0
         guard !hasProgram else { return }
 
-        try? context.save()
+        let exercises = ExerciseLibrary.seed(into: context)
+        _ = DefaultProgram.seed(context: context, exercises: exercises)
+
+        do {
+            try context.save()
+        } catch {
+            assertionFailure("Failed to save seeded data: \(error)")
+        }
     }
 }
