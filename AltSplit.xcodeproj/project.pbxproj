@@ -17,9 +17,11 @@
 		16A59C76D7C1EC23ED11A6B7 /* BiometricGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 783BB96EE5C9644A32DD07E2 /* BiometricGate.swift */; };
 		18938D69FECDFF111D3AF1EC /* ExerciseFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F784FBE9C4938E7DBC1A46D /* ExerciseFormView.swift */; };
 		284940F73EADC7934B28CAA2 /* ExerciseDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5AE1BB4ACC49AE710E0D887 /* ExerciseDetailView.swift */; };
+		2FF2BDFEFDF82E9AD4CC9EB4 /* ProgressCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560759DE0AF2C60E8EA53025 /* ProgressCalculatorTests.swift */; };
 		3232526B7D8E54860D2C3F0C /* PlannedExerciseEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E818B6334A45877F7408B8 /* PlannedExerciseEditorView.swift */; };
 		3407ADBDBC6963E13FDFEC6D /* HomeFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B3950A9AC13587BD6D43855 /* HomeFlowUITests.swift */; };
 		367189C454C7997AE1482F5E /* DefaultProgramTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD8D3BD578473B2AEF506384 /* DefaultProgramTests.swift */; };
+		3CA31AF60D023010643605E3 /* ProgressCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC1DAB1D9A95BCD60A903C5F /* ProgressCalculator.swift */; };
 		3E3EBCE22BB2C4FB809052C0 /* PhaseCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D557A6224E6DDEBAC95BF109 /* PhaseCalculator.swift */; };
 		40712E68E6C708DF343751C1 /* SplitEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA1CBD3B1C13FDDF902AB108 /* SplitEditorView.swift */; };
 		4D9D2915ABECED3C211BB916 /* BadgeUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80978A642946AC08DA06ADCF /* BadgeUpdater.swift */; };
@@ -28,6 +30,7 @@
 		666A386FF86986D3B4689F80 /* ExerciseLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32851D304313CF50A9E4A20 /* ExerciseLibraryView.swift */; };
 		67747728053A07C97B16835B /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A33C0A24A497A123EDFC275 /* Models.swift */; };
 		6B26098018D6A7C5AE7E60D2 /* SetRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBC8B7D0475E30BA4EC29E0B /* SetRowView.swift */; };
+		6D6B8FEF3AFB0120DF42724E /* ProgressFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA2ED61654F545341A94F4D5 /* ProgressFlowUITests.swift */; };
 		6E677552BFD9D62D85DF2408 /* MuscleGroupPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1A1C9BB1CB30ACF744EF7E /* MuscleGroupPickerView.swift */; };
 		73CE2C1550C43585C0011329 /* AlarmScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0320BDE49A5AA8685555F279 /* AlarmScheduler.swift */; };
 		7440C6FD8C2BAD1E30DACAC9 /* AltSplitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FD7E2C25B6AECB9F3FEC66 /* AltSplitApp.swift */; };
@@ -37,6 +40,7 @@
 		848A3543F303FDEB56964472 /* SupplementBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B62E2E2D9CFD35602C7AB3 /* SupplementBox.swift */; };
 		876155CB05A622806BD3AE58 /* CameraPreviewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 193A12AB828EB22395DC55D9 /* CameraPreviewRepresentable.swift */; };
 		93C2E21A5DBD22EC59ECD125 /* WorkoutBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F07564B78F5A1BB94470B70 /* WorkoutBox.swift */; };
+		940104A4B9699785512F2568 /* BodyProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0E635E41938D2F1D2F1B01 /* BodyProgressView.swift */; };
 		9626D4B05F2E3530E0D3E16D /* AccountabilityCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4703D311B5543BFBD6C37389 /* AccountabilityCoordinator.swift */; };
 		978A2D3A12631B05B5A4AD0A /* CameraSessionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC4DEAC22BC7D829B8A19B4 /* CameraSessionController.swift */; };
 		A0A33254AD3995BFCB12985A /* WorkoutPreviewList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04AB75E480BA12CF305BAA56 /* WorkoutPreviewList.swift */; };
@@ -51,6 +55,7 @@
 		D63C1A3A9D428F63D17B1E5C /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23B25492F314782828E197D /* NotificationScheduler.swift */; };
 		DA505CBAFAA6FF65D07681BE /* CameraCaptureBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E02D24C2406BDE06551F728 /* CameraCaptureBox.swift */; };
 		DC6AF587AF9F4C90693C9D3E /* ExerciseLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66118DA20D8A9068D952A67 /* ExerciseLibraryTests.swift */; };
+		E0EB854E767F51A957BFA7A7 /* LiftingProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB7A8F5C0967BFB26516DF5 /* LiftingProgressView.swift */; };
 		E356D0F72A6B88DBC667B6AD /* PhotoStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB264E93FD3F2B3FD07DC854 /* PhotoStore.swift */; };
 		EF1273B770998F14441D2BA2 /* AppSeeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3355095682FF870374549BA5 /* AppSeeder.swift */; };
 		F657D4D1BEFC2F1D55FB153A /* DefaultProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3770836EA904378275E6A532 /* DefaultProgram.swift */; };
@@ -88,12 +93,14 @@
 		3355095682FF870374549BA5 /* AppSeeder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSeeder.swift; sourceTree = "<group>"; };
 		3702EAA81564675FF409E19C /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		3770836EA904378275E6A532 /* DefaultProgram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultProgram.swift; sourceTree = "<group>"; };
+		3C0E635E41938D2F1D2F1B01 /* BodyProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyProgressView.swift; sourceTree = "<group>"; };
 		3FDBD8890073484C15640FDE /* TestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSupport.swift; sourceTree = "<group>"; };
 		4703D311B5543BFBD6C37389 /* AccountabilityCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountabilityCoordinator.swift; sourceTree = "<group>"; };
 		488EB5A905AF8852E4D462CA /* FocusPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusPickerView.swift; sourceTree = "<group>"; };
 		4A33C0A24A497A123EDFC275 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		4E02D24C2406BDE06551F728 /* CameraCaptureBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCaptureBox.swift; sourceTree = "<group>"; };
 		4F1A1C9BB1CB30ACF744EF7E /* MuscleGroupPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MuscleGroupPickerView.swift; sourceTree = "<group>"; };
+		560759DE0AF2C60E8EA53025 /* ProgressCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressCalculatorTests.swift; sourceTree = "<group>"; };
 		57784C58910020F5C2B5A9D6 /* AppTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTab.swift; sourceTree = "<group>"; };
 		587731629C3808200E3CB17A /* NotificationDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationDelegate.swift; sourceTree = "<group>"; };
 		5ADE55F421962F630EB994C6 /* DayEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayEditorView.swift; sourceTree = "<group>"; };
@@ -109,17 +116,20 @@
 		A1FD7E2C25B6AECB9F3FEC66 /* AltSplitApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AltSplitApp.swift; sourceTree = "<group>"; };
 		B16B8FEA34012A71FC5EBEAF /* ExercisePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExercisePickerView.swift; sourceTree = "<group>"; };
 		B23B25492F314782828E197D /* NotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationScheduler.swift; sourceTree = "<group>"; };
+		BA2ED61654F545341A94F4D5 /* ProgressFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressFlowUITests.swift; sourceTree = "<group>"; };
 		BD846500C354E83FD59E19E7 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
 		BDC4DEAC22BC7D829B8A19B4 /* CameraSessionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSessionController.swift; sourceTree = "<group>"; };
 		C5AE1BB4ACC49AE710E0D887 /* ExerciseDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseDetailView.swift; sourceTree = "<group>"; };
 		C5B62E2E2D9CFD35602C7AB3 /* SupplementBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementBox.swift; sourceTree = "<group>"; };
 		C66118DA20D8A9068D952A67 /* ExerciseLibraryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseLibraryTests.swift; sourceTree = "<group>"; };
 		CB264E93FD3F2B3FD07DC854 /* PhotoStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoStore.swift; sourceTree = "<group>"; };
+		CEB7A8F5C0967BFB26516DF5 /* LiftingProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiftingProgressView.swift; sourceTree = "<group>"; };
 		D41DDFCD179ECFC5D2EA5EC4 /* ProgressTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressTabView.swift; sourceTree = "<group>"; };
 		D557A6224E6DDEBAC95BF109 /* PhaseCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseCalculator.swift; sourceTree = "<group>"; };
 		D671F2EA861CE40EF8A73D7B /* BuilderFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuilderFlowUITests.swift; sourceTree = "<group>"; };
 		EA045831C7B607C143293D7F /* BuilderTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuilderTabView.swift; sourceTree = "<group>"; };
 		EA1CBD3B1C13FDDF902AB108 /* SplitEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitEditorView.swift; sourceTree = "<group>"; };
+		EC1DAB1D9A95BCD60A903C5F /* ProgressCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressCalculator.swift; sourceTree = "<group>"; };
 		F1E818B6334A45877F7408B8 /* PlannedExerciseEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlannedExerciseEditorView.swift; sourceTree = "<group>"; };
 		F32851D304313CF50A9E4A20 /* ExerciseLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseLibraryView.swift; sourceTree = "<group>"; };
 		F4E286DFE81B18BB1B82C6AA /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
@@ -195,6 +205,7 @@
 				D671F2EA861CE40EF8A73D7B /* BuilderFlowUITests.swift */,
 				7268FF78605362FED5D51BE3 /* CheckInFlowUITests.swift */,
 				1B3950A9AC13587BD6D43855 /* HomeFlowUITests.swift */,
+				BA2ED61654F545341A94F4D5 /* ProgressFlowUITests.swift */,
 				3FDBD8890073484C15640FDE /* TestSupport.swift */,
 			);
 			path = AltSplitUITests;
@@ -251,6 +262,7 @@
 				FD8D3BD578473B2AEF506384 /* DefaultProgramTests.swift */,
 				C66118DA20D8A9068D952A67 /* ExerciseLibraryTests.swift */,
 				622874269A9F5747E7F0BB2B /* PhaseCalculatorTests.swift */,
+				560759DE0AF2C60E8EA53025 /* ProgressCalculatorTests.swift */,
 			);
 			path = AltSplitTests;
 			sourceTree = "<group>";
@@ -288,6 +300,7 @@
 			children = (
 				298BE7F823E5773A75C90ACA /* DayResolver.swift */,
 				D557A6224E6DDEBAC95BF109 /* PhaseCalculator.swift */,
+				EC1DAB1D9A95BCD60A903C5F /* ProgressCalculator.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -295,6 +308,8 @@
 		DF1322C2D5594B937A8B5DFE /* Progress */ = {
 			isa = PBXGroup;
 			children = (
+				3C0E635E41938D2F1D2F1B01 /* BodyProgressView.swift */,
+				CEB7A8F5C0967BFB26516DF5 /* LiftingProgressView.swift */,
 				D41DDFCD179ECFC5D2EA5EC4 /* ProgressTabView.swift */,
 			);
 			path = Progress;
@@ -399,6 +414,7 @@
 				CB25EEE3B2279D227AE502F8 /* BuilderFlowUITests.swift in Sources */,
 				099F1ED510ADED6BA7E9031F /* CheckInFlowUITests.swift in Sources */,
 				3407ADBDBC6963E13FDFEC6D /* HomeFlowUITests.swift in Sources */,
+				6D6B8FEF3AFB0120DF42724E /* ProgressFlowUITests.swift in Sources */,
 				020CA1711A6FD2E1784AE5A9 /* TestSupport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -414,6 +430,7 @@
 				77D272D1ED062CDCD6FCD4F4 /* AppTab.swift in Sources */,
 				4D9D2915ABECED3C211BB916 /* BadgeUpdater.swift in Sources */,
 				16A59C76D7C1EC23ED11A6B7 /* BiometricGate.swift in Sources */,
+				940104A4B9699785512F2568 /* BodyProgressView.swift in Sources */,
 				B32400B5DFE4B9564B9E76CF /* BuilderTabView.swift in Sources */,
 				DA505CBAFAA6FF65D07681BE /* CameraCaptureBox.swift in Sources */,
 				876155CB05A622806BD3AE58 /* CameraPreviewRepresentable.swift in Sources */,
@@ -431,6 +448,7 @@
 				04A56F43E6C1A69F3B28C590 /* ExercisePickerView.swift in Sources */,
 				0AF7E0ABBC1F24FE83B20FCD /* FocusPickerView.swift in Sources */,
 				F663848F34ED64E74CDF2F76 /* HomeView.swift in Sources */,
+				E0EB854E767F51A957BFA7A7 /* LiftingProgressView.swift in Sources */,
 				67747728053A07C97B16835B /* Models.swift in Sources */,
 				6E677552BFD9D62D85DF2408 /* MuscleGroupPickerView.swift in Sources */,
 				AE7B075D8F55A94F1403CAB6 /* NotificationDelegate.swift in Sources */,
@@ -438,6 +456,7 @@
 				3E3EBCE22BB2C4FB809052C0 /* PhaseCalculator.swift in Sources */,
 				E356D0F72A6B88DBC667B6AD /* PhotoStore.swift in Sources */,
 				3232526B7D8E54860D2C3F0C /* PlannedExerciseEditorView.swift in Sources */,
+				3CA31AF60D023010643605E3 /* ProgressCalculator.swift in Sources */,
 				04220B037FDA541CB02915E4 /* ProgressTabView.swift in Sources */,
 				7A34B73D0B8634D74200DEFD /* RootTabView.swift in Sources */,
 				6B26098018D6A7C5AE7E60D2 /* SetRowView.swift in Sources */,
@@ -458,6 +477,7 @@
 				367189C454C7997AE1482F5E /* DefaultProgramTests.swift in Sources */,
 				DC6AF587AF9F4C90693C9D3E /* ExerciseLibraryTests.swift in Sources */,
 				645D423657905C064C35D180 /* PhaseCalculatorTests.swift in Sources */,
+				2FF2BDFEFDF82E9AD4CC9EB4 /* ProgressCalculatorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
