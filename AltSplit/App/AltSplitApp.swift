@@ -18,7 +18,10 @@ struct AltSplitApp: App {
             SupplementLog.self,
             SnoozeRecord.self,
         ])
-        let configuration = ModelConfiguration(schema: schema)
+        // UI tests launch with a fresh in-memory store so every run starts
+        // from the same deterministic seeded state.
+        let inMemory = ProcessInfo.processInfo.arguments.contains("UITEST_RESET")
+        let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory)
         do {
             modelContainer = try ModelContainer(for: schema, configurations: [configuration])
         } catch {

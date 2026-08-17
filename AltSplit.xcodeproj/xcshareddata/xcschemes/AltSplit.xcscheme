@@ -35,6 +35,20 @@
                ReferencedContainer = "container:AltSplit.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "FFD6F1BE2798AEE9C7E54C4D"
+               BuildableName = "AltSplitUITests.xctest"
+               BlueprintName = "AltSplitUITests"
+               ReferencedContainer = "container:AltSplit.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -61,6 +75,17 @@
                BlueprintIdentifier = "8952692E9ED0F52DFC153E12"
                BuildableName = "AltSplitTests.xctest"
                BlueprintName = "AltSplitTests"
+               ReferencedContainer = "container:AltSplit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "FFD6F1BE2798AEE9C7E54C4D"
+               BuildableName = "AltSplitUITests.xctest"
+               BlueprintName = "AltSplitUITests"
                ReferencedContainer = "container:AltSplit.xcodeproj">
             </BuildableReference>
          </TestableReference>

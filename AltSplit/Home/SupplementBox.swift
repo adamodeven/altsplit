@@ -8,6 +8,7 @@ struct SupplementBox: View {
     let isOn: Bool
     let streak: Int
     let detail: String
+    let identifier: String
     let onTap: () -> Void
 
     var body: some View {
@@ -31,5 +32,6 @@ struct SupplementBox: View {
         .buttonStyle(.plain)
         .glassEffect(Glass.regular.interactive(), in: .rect(corners: .concentric))
         .animation(.default, value: isOn)
+        .accessibilityIdentifier(identifier)
     }
 }

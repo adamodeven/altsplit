@@ -41,7 +41,10 @@ struct HomeView: View {
 
         GlassEffectContainer {
             VStack(spacing: 16) {
-                WorkoutBox(day: today) { showingWorkout = true }
+                WorkoutBox(day: today) {
+                    if !today.isRest { showingWorkout = true }
+                }
+                .accessibilityIdentifier("workoutBox")
 
                 HStack(spacing: 16) {
                     SupplementBox(
@@ -49,7 +52,8 @@ struct HomeView: View {
                         symbol: "fork.knife",
                         isOn: todaysLog?.protein ?? false,
                         streak: streak(\.protein),
-                        detail: streakDetail(streak(\.protein))
+                        detail: streakDetail(streak(\.protein)),
+                        identifier: "supplementBox.protein"
                     ) {
                         toggle(\.protein)
                     }
@@ -58,7 +62,8 @@ struct HomeView: View {
                         symbol: "pill.fill",
                         isOn: todaysLog?.creatine ?? false,
                         streak: streak(\.creatine),
-                        detail: complianceDetail(\.creatine)
+                        detail: complianceDetail(\.creatine),
+                        identifier: "supplementBox.creatine"
                     ) {
                         toggle(\.creatine)
                     }
@@ -70,11 +75,12 @@ struct HomeView: View {
                     onTapDue: { showingCheckIn = true },
                     onTapNotDue: { selection = .progress }
                 )
+                .accessibilityIdentifier("checkInBox")
             }
             .padding(.bottom, 24)
         }
         .fullScreenCover(isPresented: $showingWorkout) {
-            WorkoutSessionStubView(day: today)
+            WorkoutSessionView(day: today)
         }
         .sheet(isPresented: $showingCheckIn) {
             CheckInCaptureStubView()

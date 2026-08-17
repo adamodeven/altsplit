@@ -42,15 +42,31 @@ targets:
       base:
         GENERATE_INFOPLIST_FILE: YES
         PRODUCT_BUNDLE_IDENTIFIER: com.adamodeven.AltSplitTests
+  AltSplitUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: AltSplitUITests
+    dependencies:
+      - target: AltSplit
+        embed: false
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.adamodeven.AltSplitUITests
+        TEST_TARGET_NAME: AltSplit
 schemes:
   AltSplit:
     build:
       targets:
         AltSplit: all
         AltSplitTests: [test]
+        AltSplitUITests: [test]
     test:
       targets:
         - AltSplitTests
+        - AltSplitUITests
       config: Debug
     run:
       config: Debug
