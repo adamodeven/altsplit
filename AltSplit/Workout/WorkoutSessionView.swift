@@ -150,6 +150,7 @@ struct WorkoutSessionView: View {
 
         session.endedAt = .now
         try? modelContext.save()
+        Task { await AccountabilityCoordinator.refreshBadge(context: modelContext) }
         dismiss()
     }
 

@@ -30,8 +30,13 @@ targets:
         INFOPLIST_KEY_NSCameraUsageDescription: "Used to take your check-in progress photo."
         INFOPLIST_KEY_NSPhotoLibraryUsageDescription: "Used to choose a check-in photo when the camera isn't available."
         INFOPLIST_KEY_NSFaceIDUsageDescription: "Face ID protects your check-in photos."
+        INFOPLIST_KEY_NSAlarmKitUsageDescription: "Used to schedule workout and weigh-in alarms that break through silent mode."
         MARKETING_VERSION: "1.0"
         CURRENT_PROJECT_VERSION: "1"
+    entitlements:
+      path: AltSplit/AltSplit.entitlements
+      properties:
+        com.apple.developer.alarmkit: true
   AltSplitTests:
     type: bundle.unit-test
     platform: iOS

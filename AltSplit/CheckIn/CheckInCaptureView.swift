@@ -89,6 +89,7 @@ struct CheckInCaptureView: View {
         let checkIn = CheckIn(date: .now, weightKilograms: kilograms, photoRef: filename, cycleIndex: cycleIndex)
         modelContext.insert(checkIn)
         try? modelContext.save()
+        Task { await AccountabilityCoordinator.refreshBadge(context: modelContext) }
         dismiss()
     }
 }

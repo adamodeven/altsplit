@@ -1,9 +1,11 @@
 import SwiftUI
 import SwiftData
+import UserNotifications
 
 @main
 struct AltSplitApp: App {
     let modelContainer: ModelContainer
+    let notificationDelegate: NotificationDelegate
 
     init() {
         let schema = Schema([
@@ -28,6 +30,9 @@ struct AltSplitApp: App {
             fatalError("Failed to create ModelContainer: \(error)")
         }
         AppSeeder.seedIfNeeded(context: modelContainer.mainContext)
+
+        notificationDelegate = NotificationDelegate(modelContainer: modelContainer)
+        UNUserNotificationCenter.current().delegate = notificationDelegate
     }
 
     var body: some Scene {

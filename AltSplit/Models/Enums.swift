@@ -58,6 +58,19 @@ enum Weekday: Int, Codable, CaseIterable, Sendable, Comparable {
     static func < (lhs: Weekday, rhs: Weekday) -> Bool {
         lhs.rawValue < rhs.rawValue
     }
+
+    /// For AlarmKit's weekly recurrence, which speaks `Locale.Weekday`.
+    var localeWeekday: Locale.Weekday {
+        switch self {
+        case .monday: .monday
+        case .tuesday: .tuesday
+        case .wednesday: .wednesday
+        case .thursday: .thursday
+        case .friday: .friday
+        case .saturday: .saturday
+        case .sunday: .sunday
+        }
+    }
 }
 
 enum MuscleGroup: String, Codable, CaseIterable, Sendable, Identifiable {

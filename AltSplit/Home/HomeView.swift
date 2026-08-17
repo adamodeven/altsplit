@@ -33,6 +33,10 @@ struct HomeView: View {
             }
             .navigationTitle("AltSplit")
         }
+        .task {
+            guard let program = programs.first else { return }
+            await AccountabilityCoordinator.refreshAll(program: program, context: modelContext)
+        }
     }
 
     @ViewBuilder
@@ -104,6 +108,7 @@ struct HomeView: View {
         }()
         log[keyPath: keyPath].toggle()
         try? modelContext.save()
+        Task { await AccountabilityCoordinator.refreshBadge(context: modelContext) }
     }
 
     /// Consecutive days (walking back from today) with `keyPath` true. A
