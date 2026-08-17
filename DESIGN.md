@@ -140,7 +140,7 @@ WorkoutSession
 SetEntry
   exercise: Exercise
   setIndex: Int
-  weight: Double?
+  weight: Double?                  // canonical KILOGRAMS, always
   reps: Int?
   duration: TimeInterval?
   rpe: Double?
@@ -415,3 +415,28 @@ purchase.
 - Erg-specific logging depth and erg progress charts
 - Focus suggestions computed from trailing volume
 - Plate maths, supersets, warmup auto-generation
+- **One-tap lb ⇄ kg switching** (see below)
+
+### Unit switching
+
+One-tap toggle between pounds and kilograms, settable per workout and
+changeable *dynamically* — mid-session during an active workout, or
+afterwards when reviewing it.
+
+Design constraints this implies:
+
+- **Weight is stored canonically in kilograms, always.** The toggle is a
+  display and entry-conversion concern that never mutates stored values, so
+  flipping units mid-workout cannot corrupt history and every chart stays
+  comparable regardless of what was typed. This needs to be true from the
+  first line of the logger — retrofitting a canonical unit after real data
+  exists is a migration, so it is noted here despite the feature itself being
+  later.
+- Preference persists on the `WorkoutSession` (so a session reviewed later
+  reads back the way it was entered), over a global default in settings.
+- Display rounding to sensible increments — 0.5 lb, 0.25 kg — while keeping
+  full precision stored. Converted values otherwise render as noise like
+  "83.91 kg".
+- Plate maths, when it arrives, has to follow the active unit: 45/25/10/5/2.5
+  lb versus 20/15/10/5/2.5 kg are different plate sets, not a conversion of
+  one another.
