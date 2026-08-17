@@ -1,15 +1,22 @@
 import SwiftUI
+import SwiftData
 
-/// Placeholder for the Builder tab (split editor and exercise library).
-/// Built out in a later step.
+/// Split editor and exercise library.
 struct BuilderTabView: View {
+    @Query private var programs: [Program]
+
     var body: some View {
         NavigationStack {
-            ContentUnavailableView(
-                "Builder",
-                systemImage: "hammer.fill",
-                description: Text("Split editor and exercise library land here.")
-            )
+            List {
+                if let program = programs.first {
+                    NavigationLink("Split Editor") {
+                        SplitEditorView(program: program)
+                    }
+                }
+                NavigationLink("Exercise Library") {
+                    ExerciseLibraryView()
+                }
+            }
             .navigationTitle("Builder")
             .tabBarMinimizeBehavior(.onScrollDown)
         }
