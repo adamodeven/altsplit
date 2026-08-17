@@ -8,13 +8,6 @@ final class HomeFlowUITests: XCTestCase {
         continueAfterFailure = false
     }
 
-    private func launchApp() -> XCUIApplication {
-        let app = XCUIApplication()
-        app.launchArguments = ["UITEST_RESET"]
-        app.launch()
-        return app
-    }
-
     func testHomeShowsSeededWorkoutBox() {
         let app = launchApp()
         let workoutBox = app.buttons["workoutBox"]

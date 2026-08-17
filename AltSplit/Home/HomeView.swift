@@ -83,7 +83,7 @@ struct HomeView: View {
             WorkoutSessionView(day: today)
         }
         .sheet(isPresented: $showingCheckIn) {
-            CheckInCaptureStubView()
+            CheckInCaptureView(program: program, previousCheckIn: checkIns.first)
         }
     }
 
