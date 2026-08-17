@@ -3,16 +3,21 @@
 A personal iPhone workout tracker built around a two-week alternating split,
 with an accountability layer that is hard to ignore.
 
+**Target: iOS 26**, SwiftUI + SwiftData, Liquid Glass design language.
+
 ## Principles
 
 1. **Today is the app.** The home screen answers "what am I doing right now"
    and lets you act on it without navigating.
 2. **One tap for anything daily.** Supplements, starting a workout, completing
    a set. If it happens every day it does not get a nav push.
-3. **Honest data.** A missed workout is recorded as missed, not omitted. A
-   snoozed reminder is recorded as snoozed. Adherence numbers are only useful
-   if they can go down.
-4. **Local first.** No accounts, no server, no social features.
+3. **Stable geometry.** Home screen boxes never resize or reflow based on
+   state. Muscle memory beats information density.
+4. **Honest data.** A missed workout is recorded as missed. A snoozed alarm is
+   recorded as snoozed. There is no pause mode — if you miss a week, you missed
+   a week, and the record says so. Adherence numbers are only useful if they
+   can go down.
+5. **Local first.** No accounts, no server, no social features.
 
 ---
 
@@ -34,7 +39,7 @@ The weekly skeleton is identical in both phases. Only the exercises differ.
 
 Phase A and phase B hit the same groups on the same days with **different
 exercises** — different regions of the muscle, or a different stimulus
-(plyometric / isometric / eccentric / tempo).
+(plyometric / eccentric / isometric / tempo).
 
 Because the shape is shared, it is defined once. A and B are two exercise
 pools hanging off each day slot, not two independent programs.
@@ -42,13 +47,13 @@ pools hanging off each day slot, not two independent programs.
 ### Phase resolution
 
 ```
-phase = (weeksSince(anchorDate) / 1) % 2   // 0 = A, 1 = B
+phase = (weeksSince(anchorDate)) % 2      // 0 = A, 1 = B
 ```
 
 Calendar-anchored, **not** completion-anchored. The split is a rhythm; a
-missed week should not permanently desync training from the calendar. A
-manual "shift phase" control in settings covers the case where you genuinely
-want to repeat a week.
+missed week does not desync training from the calendar, it just logs as
+missed. A manual "shift phase" control in settings covers the case where you
+deliberately want to repeat a week.
 
 ### The double day
 
@@ -56,22 +61,41 @@ Saturday doubles a muscle group chosen by current goals.
 
 **Resolution rule: the double serves the *other* phase's exercises for the
 focused group.** In an A week focusing shoulders, Saturday runs phase B's
-shoulder pool. This needs no extra data entry and guarantees the double is a
+shoulder pool. No extra data entry, and the double is guaranteed to be a
 different stimulus rather than a repeat.
 
-The focus is a persistent setting (`currentFocus: MuscleGroup`) that changes
-when you decide it should. The app prompts to reconfirm every 4 weeks so it
-cannot go stale unnoticed — that prompt doubles as an accountability
-touchpoint. When picking, show trailing-4-week set volume per group so the
-choice is informed by what you have actually been neglecting.
+The focus is a persistent setting (`currentFocus: MuscleGroup`) changed when
+you decide it should be. The app prompts to reconfirm every 4 weeks so it
+cannot go stale unnoticed. When picking, show trailing-4-week set volume per
+group so the choice is informed by what you have actually been neglecting.
 
-### Erg day
+The double can also resolve to a second erg.
 
-Rowing is logged as distance / time / split / stroke rate, not sets and reps.
-`sessionType` is a first-class enum from day one (`lifting` | `cardio`) with
-separate logging screens and separate "last time" comparisons. A Saturday
-double is occasionally a second erg, so the double day must be able to
-resolve to a cardio session too.
+---
+
+## Exercise typing
+
+Two orthogonal axes. Conflating them is the mistake.
+
+**`type`** determines *what the logging UI shows*:
+
+| type | Logged fields |
+|------|---------------|
+| `.lift` | weight × reps, rest |
+| `.hold` | duration, optional added weight |
+| `.bodyweight` | reps, optional added weight |
+| `.erg` | distance, time, split (per 500m), stroke rate |
+| `.cardio` | distance, time |
+
+**`modality`** is a descriptive tag: `.standard`, `.plyometric`, `.eccentric`,
+`.isometric`, `.tempo`. It drives A/B differentiation and filtering ("show me
+all my eccentric chest work").
+
+The axes correlate but are not the same. A plyometric push-up is
+`type: .bodyweight, modality: .plyometric` — logged exactly like a normal
+push-up. A wall sit is `type: .hold, modality: .isometric` — logged in
+seconds. Tempo bench is `type: .lift, modality: .tempo` with a tempo string in
+notes.
 
 ---
 
@@ -86,47 +110,53 @@ WeekTemplate                       // defined once, shared by both phases
   DayTemplate
     weekday: Weekday
     groups: [MuscleGroup]
-    sessionType: .lifting | .cardio | .rest | .double
+    slotKind: .lifting | .cardio | .rest | .double
     poolA: [PlannedExercise]
     poolB: [PlannedExercise]
 
 Exercise
   name: String
-  muscleGroup: MuscleGroup
-  modality: .standard | .plyometric | .isometric | .eccentric | .tempo
+  type: .lift | .hold | .bodyweight | .erg | .cardio
+  modality: .standard | .plyometric | .eccentric | .isometric | .tempo
+  muscleGroup: MuscleGroup?        // nil for erg/cardio
   equipment: Equipment
+  isUserCreated: Bool
 
 PlannedExercise
   exercise: Exercise
   targetSets: Int
-  targetRepRange: ClosedRange<Int>
+  targetReps: ClosedRange<Int>?    // nil for .hold / .erg / .cardio
+  targetDuration: TimeInterval?
+  restSeconds: Int
   notes: String?
 
 WorkoutSession
   date: Date
   phase: .a | .b
   status: .completed | .missed | .partial
-  sessionType: .lifting | .cardio
-  entries: [SetEntry] | cardioResult: CardioResult
+  entries: [SetEntry]
+  cardioResult: CardioResult?
 
 SetEntry
   exercise: Exercise
   setIndex: Int
-  weight: Double
-  reps: Int
+  weight: Double?
+  reps: Int?
+  duration: TimeInterval?
   rpe: Double?
   isWarmup: Bool
+  completedAt: Date?
 
 CardioResult
   distanceMeters: Int
   duration: TimeInterval
-  avgSplit: TimeInterval        // per 500m
+  avgSplit: TimeInterval           // per 500m
   avgStrokeRate: Int?
 
-CheckIn                           // weight + photo, atomically
+CheckIn                            // weight + photo, atomically
   date: Date
   weight: Measurement<UnitMass>
-  photoRef: String               // app container, not camera roll
+  photoRef: String                 // app container, not camera roll
   cycleIndex: Int
 
 SupplementLog
@@ -135,165 +165,253 @@ SupplementLog
   creatine: Bool
 ```
 
-`modality` being first-class is what makes the A/B distinction queryable
-later ("show me all my eccentric chest work").
+---
+
+## Navigation
+
+Three tabs in the Liquid Glass tab bar. On iOS 26 the tab bar picks up the
+glass treatment automatically; use `.tabBarMinimizeBehavior(.onScrollDown)` on
+scrolling screens so charts and long lists get the full display.
+
+| Tab | Purpose |
+|-----|---------|
+| **Home** | Today. Bento grid. |
+| **Progress** | Body, lifting, and erg progress. Graphs. |
+| **Builder** | Split editor and exercise library. |
+
+---
+
+## Home — bento grid
+
+**Static box sizing. Boxes never resize, reflow, or appear/disappear based on
+state.** A box with nothing to report shows a resting state at the same
+footprint. This is the whole point: the workout button is always in the same
+place under your thumb.
+
+```
+┌─────────────────────────────────────┐
+│  WEEK B · TUESDAY                   │
+│  Legs + Shoulders                   │   full width
+│  5 exercises · ~48 min              │   tap → start workout
+│                                     │   long press → preview
+└─────────────────────────────────────┘
+┌────────────────┐ ┌──────────────────┐
+│   PROTEIN      │ │   CREATINE       │   side by side
+│      ○         │ │       ●          │   tap → toggle
+│   7 day streak │ │   26 / 30 days   │
+└────────────────┘ └──────────────────┘
+┌─────────────────────────────────────┐
+│  WEIGH IN + PHOTO DUE               │   full width
+│  Cycle 7 · last: 181.4 lb           │   tap → progress
+└─────────────────────────────────────┘
+```
+
+The third box is the state-swapping one, and it swaps **content only**:
+
+- *Due:* prompt to weigh in, tap opens the capture sheet.
+- *Not due:* current weight, trend arrow, days until next check-in. Tap opens
+  the Progress tab.
+
+Interaction detail:
+
+- **Tap the workout box** → straight into the active workout logger. No
+  intermediate confirm screen.
+- **Long press the workout box** → `.contextMenu(preview:)` showing the full
+  exercise list for the day, so you can see what's coming without committing.
+- **Tap a supplement box** → toggles immediately with a symbol transition. No
+  confirmation, tap again to undo.
+
+### Liquid Glass treatment
+
+- Wrap the grid in a `GlassEffectContainer` so adjacent boxes blend and morph
+  correctly rather than each compositing independently.
+- `.glassEffect(.regular, in: .rect(corner: .concentric))` on each box.
+  Concentric corners keep the radii visually consistent with the display
+  corners and with nested content.
+- `.glassEffect(.regular.interactive())` on the tappable boxes so they respond
+  to touch with the standard glass deformation.
+- Tint the workout box on a training day, leave it untinted on a rest day —
+  colour carries the state, geometry does not move.
+- `.buttonStyle(.glassProminent)` for the primary action inside the active
+  workout screen.
+- Background: `.backgroundExtensionEffect()` so content bleeds correctly under
+  the tab bar and status bar rather than sitting in a letterbox.
+
+Verify the exact modifier signatures against the current SDK when building —
+the Liquid Glass APIs moved between betas.
 
 ---
 
 ## Accountability
 
-iOS has no true persistent notification. What actually works, in order of
-effectiveness:
+iOS 26 offers a materially better primitive than earlier versions.
 
-- **Escalating cascade.** Schedule 3–4 notifications (e.g. 18:00, 19:30,
-  21:00); cancel the remainder the instant the task is checked off. One
-  notification is nothing. Three that keep coming back is accountability.
-  This is the primary mechanism.
-- **Time Sensitive interruption level.** Breaks through Focus modes. Needs
-  only an Xcode entitlement, unlike Critical Alerts which require Apple
-  approval that a personal app will not get. *(Paid account.)*
-- **Notification actions.** Check off protein / creatine directly from the
-  notification without launching the app.
-- **Badge count** = open items today.
-- **Live Activity** during an active workout — rest timer on the lock screen
-  and Dynamic Island. 8-hour cap is not a constraint here. *(Paid account.)*
-- **Widget in an incomplete state.** Passive, constant, on the home screen.
-  *(Paid account — needs App Groups.)*
+### AlarmKit — the hard tier
 
-Snoozes are logged, not free. Four snoozes on a weigh-in should be visible.
+`AlarmKit` (new in iOS 26) schedules real alarms: they break through silent
+mode and Focus, present alarm-style UI, and support a countdown plus custom
+actions — without the Critical Alerts entitlement Apple will not grant a
+personal app. This is the correct mechanism for the things that must not be
+missed.
 
-### Reminder schedule
+Use alarms for:
 
-| Trigger | Cadence |
-|---------|---------|
-| Workout | On training days, cascade starting late afternoon |
-| Protein / creatine | Daily cascade, evening |
-| Weight + photo | Monday morning of each A-week (every 2 weeks) |
-| Focus reconfirm | Every 4 weeks |
-| Cycle review | Sunday night at end of each B-week |
+- **Workout start** on training days.
+- **Weigh-in morning** at the start of each A-week.
+
+An alarm's action should deep-link straight into the relevant screen, and the
+alarm cancels the moment the task is completed.
+
+### Notifications — the soft tier
+
+Standard `UNUserNotificationCenter` for things that deserve a nudge but not a
+klaxon:
+
+- Protein / creatine, evening, with **notification actions** so they can be
+  checked off without launching the app.
+- Focus reconfirmation every 4 weeks.
+- Cycle review at the end of each B-week.
+
+An escalating cascade (schedule 3, cancel the remainder on completion) still
+applies here, but it is now the fallback tier rather than the main event.
+
+### Badge
+
+Badge count = open items today (workout not logged, supplements not taken,
+check-in due). Set via `UNUserNotificationCenter.setBadgeCount(_:)`.
+
+### Honesty
+
+Snoozes are logged. Missed sessions are written as `.missed` rather than
+omitted. There is no pause or vacation mode.
 
 ---
 
 ## Weight + photo
 
-Enforced atomic at the model layer — there is no valid `CheckIn` with a nil
-weight or a nil photo. Single sheet, save disabled until both exist.
+Atomic at the model layer — there is no valid `CheckIn` with a nil weight or
+a nil photo. Single sheet, save disabled until both exist.
 
+- **Every 2 weeks, aligned to the cycle** — Monday morning of each A-week.
+  Every photo is implicitly labelled "start of cycle N" and the timeline is
+  evenly spaced by construction.
 - **Onion-skin overlay.** Ghost the previous photo at ~30% opacity in the
-  viewfinder so pose, distance, and framing match. Without this the photos
-  are not comparable six months out, which defeats the point.
+  viewfinder so pose, distance, and framing match. Without this the photos are
+  not comparable six months out, which defeats the point.
 - **App container storage**, not the camera roll, with file protection on.
-  The whole section sits behind Face ID.
-- **One pose** to start (front). Additional poses optional per check-in —
-  three poses is better data but materially higher friction, and friction is
-  the thing that kills this habit.
-- Aligned to the cycle, so every photo is implicitly labelled "start of cycle
-  N" and the timeline is evenly spaced.
-
-**Payoff view** (build this early, not as a v2 nicety — it is the entire
-reason the habit sticks): weight trend chart with photo thumbnails pinned
-along the time axis, plus a two-up compare with a date scrubber.
+  The section sits behind Face ID.
+- **One pose** (front) to start. Additional poses optional per check-in. Three
+  is better data but materially higher friction, and friction kills this habit.
 
 ---
 
-## Supplements
+## Progress tab
 
-Trivially simple data; the surfaces are the point.
+The payoff screen. Build it early — it is the only thing that repays two weeks
+of compliance, and it is what makes the habit stick.
 
-- Home screen toggles, one tap each
-- Notification actions
-- Control Center / Lock Screen / Action Button controls *(paid account)*
-- Interactive widget *(paid account)*
-- App Shortcut → "Hey Siri, log creatine"
+**Body**
+- Weight trend line with a rolling average overlay, photo thumbnails pinned
+  along the time axis.
+- Two-up photo compare with a date scrubber. Default to first-vs-latest,
+  because that comparison is the most motivating one available.
+- Cycle-over-cycle weight delta.
 
-Creatine is about saturation, so the useful stat is "26 of the last 30 days"
-rather than a streak. Protein powder reads better as a streak.
+**Lifting**
+- Estimated 1RM trend per exercise (Epley), which is the cleanest single
+  progress signal across varying rep schemes.
+- Volume per muscle group per cycle, as stacked bars — also feeds the double
+  day focus decision.
+- Personal-record feed: every time a set beats its previous best, it lands
+  here. Cheap to compute, disproportionately motivating.
+- A/B comparison: phase A vs phase B performance on the same muscle group.
 
----
+**Erg**
+- Split trend over time, distance-normalised so a 2k and a 5k are comparable.
+- Distance accumulated per cycle.
+- Best efforts per standard distance (500m / 1k / 2k / 5k / 10k).
 
-## Home screen
+**Adherence**
+- Sessions completed vs planned per cycle.
+- Supplement consistency, 30-day window.
+- Current streak and longest streak.
 
-Everything above the fold. No navigation for anything daily.
-
-```
-┌─────────────────────────────┐
-│ WEEK B · TUESDAY            │
-│ Legs + Shoulders            │
-│ [    START WORKOUT     ]    │
-├─────────────────────────────┤
-│ ☐ Protein    ☐ Creatine     │
-├─────────────────────────────┤
-│ ⚠ Weigh-in + photo due      │   (only when due)
-├─────────────────────────────┤
-│ Cycle adherence: 9/10       │
-└─────────────────────────────┘
-```
-
-Rest days render a rest state and keep the supplement row. Never a blank
-hole, or the app stops being a daily habit on Thursdays and Sundays.
+Swift Charts throughout. iOS 26 adds `Chart3D`; ignore it here — 3D charts
+would hurt readability for every series in this app.
 
 ---
 
-## Active workout
+## Builder tab
 
-Strong-like. Pre-loaded from today's resolved template, so there is no
-"choose a workout" step.
+### Split editor
 
-- **"Last time" prefill comes from the same exercise**, not the same day.
-  Week B chest is a different pool from Week A chest, so "last chest day" is
-  a meaningless comparison.
-- Auto-start rest timer on set completion.
-- Screen stays awake during a session.
-- Inline previous performance: "last time: 3×8 @ 135".
-- Partial sessions save as `.partial` rather than being discarded.
+- Pick muscle groups per weekday.
+- For each day, edit the phase A pool and the phase B pool side by side, so
+  the differentiation between them is visible while you make it.
+- Add exercises from the library, set target sets / reps / rest.
+- Reorder within a day.
+- Set the double day focus.
+
+### Exercise library
+
+- Preloaded with a solid default library covering the standard movements for
+  each muscle group, plus erg pieces.
+- Add custom exercises with type, modality, muscle group, and equipment.
+- Filter by muscle group, type, modality, equipment.
+- Each exercise shows where it is used in the split and its history, so you
+  can tell at a glance whether it is actually earning its slot.
+- User-created exercises are flagged so a library refresh never overwrites
+  them.
 
 ---
 
 ## Stack
 
 - SwiftUI + SwiftData
-- iOS 18 minimum (required for Control Center controls in phase 2)
+- iOS 26 minimum
 - Local-first, no server, no accounts
-- CloudKit private database for sync/backup *(paid account)*
-- HealthKit: write workouts for Fitness ring credit, read bodyweight *(paid
-  account)*
+- Swift Charts for the progress tab
+- AlarmKit for the hard reminder tier
+- App icon built in Icon Composer, so it renders correctly with the Liquid
+  Glass icon treatment (clear / tinted / dark variants)
 
-### Provisioning constraints
+### Provisioning
 
-Free provisioning supports the whole of v1: the app itself, standard local
-notifications, and local SwiftData.
+Free provisioning covers all of v1: the app, SwiftData, local notifications,
+and AlarmKit.
 
-It does **not** support App Groups (and therefore widgets and Control Center
-controls), HealthKit, CloudKit, or Time Sensitive notifications. It also
-requires re-signing every 7 days, which is disqualifying for an app meant to
-be relied on daily.
-
-The $99/yr account is what unlocks phase 2. Worth buying at the point the app
-becomes something you live in rather than something you are building.
+It does not cover App Groups (and therefore widgets and Control Center
+controls), HealthKit, or CloudKit. It also requires re-signing every 7 days,
+which is disqualifying long-term for an app meant to be relied on daily — so
+the $99 is a "when I start living in it" purchase, not a "before I start"
+purchase.
 
 ---
 
 ## Scope
 
-**v1 — buildable on free provisioning**
+**v1 — free provisioning**
 
-- A/B program definition and phase resolution
-- Today view
-- Active lifting workout logging
+- Program definition, phase resolution, double-day resolution
+- Bento home
+- Active workout logger (lift / hold / bodyweight)
 - Supplement toggles
 - Weight + photo check-in with onion-skin
-- Escalating local notifications
+- AlarmKit alarms + notification soft tier + badge
+- Builder: split editor and exercise library
+- Progress: body and lifting
 
-**v2 — needs the paid account**
+**v2 — after the $99**
 
 - Widgets and Control Center controls
-- Live Activity rest timer
-- HealthKit and CloudKit sync
-- Time Sensitive notifications
+- **Live Activity on weigh-in days**, persisting until the check-in is
+  recorded
+- Live Activity rest timer during workouts
+- HealthKit (write workouts for ring credit, read bodyweight)
+- CloudKit private sync
 
 **v3**
 
-- Erg-specific logging and cardio history
-- Volume and progression charts
-- Focus suggestions from trailing volume
-- Photo comparison scrubber
+- Erg-specific logging depth and erg progress charts
+- Focus suggestions computed from trailing volume
+- Plate maths, supersets, warmup auto-generation
