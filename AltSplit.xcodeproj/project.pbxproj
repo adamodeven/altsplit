@@ -8,10 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		3E3EBCE22BB2C4FB809052C0 /* PhaseCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D557A6224E6DDEBAC95BF109 /* PhaseCalculator.swift */; };
+		645D423657905C064C35D180 /* PhaseCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 622874269A9F5747E7F0BB2B /* PhaseCalculatorTests.swift */; };
 		67747728053A07C97B16835B /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A33C0A24A497A123EDFC275 /* Models.swift */; };
 		7440C6FD8C2BAD1E30DACAC9 /* AltSplitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FD7E2C25B6AECB9F3FEC66 /* AltSplitApp.swift */; };
 		7754F7A5C457A56942C26CA4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95E05C805FB34D51BD9E5E8 /* ContentView.swift */; };
-		855A68EEF42BD21ADD4D5A2B /* PlaceholderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6752AC263E133AE50DD021 /* PlaceholderTests.swift */; };
+		7A48A2B46E36373BCABD22A6 /* DayResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE02918BC23F5D2F83AE9FE /* DayResolverTests.swift */; };
 		BB196E0BC394AFEC3397D8CB /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E286DFE81B18BB1B82C6AA /* Enums.swift */; };
 		CC6E193DCE2166CDC6B73910 /* DayResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298BE7F823E5773A75C90ACA /* DayResolver.swift */; };
 		EF1273B770998F14441D2BA2 /* AppSeeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3355095682FF870374549BA5 /* AppSeeder.swift */; };
@@ -31,8 +32,9 @@
 		298BE7F823E5773A75C90ACA /* DayResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayResolver.swift; sourceTree = "<group>"; };
 		3355095682FF870374549BA5 /* AppSeeder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSeeder.swift; sourceTree = "<group>"; };
 		4A33C0A24A497A123EDFC275 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
-		4D6752AC263E133AE50DD021 /* PlaceholderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderTests.swift; sourceTree = "<group>"; };
+		622874269A9F5747E7F0BB2B /* PhaseCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseCalculatorTests.swift; sourceTree = "<group>"; };
 		78DD64093289BE30C18D3477 /* AltSplit.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AltSplit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9EE02918BC23F5D2F83AE9FE /* DayResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayResolverTests.swift; sourceTree = "<group>"; };
 		A1FD7E2C25B6AECB9F3FEC66 /* AltSplitApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AltSplitApp.swift; sourceTree = "<group>"; };
 		C95E05C805FB34D51BD9E5E8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D557A6224E6DDEBAC95BF109 /* PhaseCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseCalculator.swift; sourceTree = "<group>"; };
@@ -79,7 +81,8 @@
 		8C4B04DA6DF0DB5DF55C7923 /* AltSplitTests */ = {
 			isa = PBXGroup;
 			children = (
-				4D6752AC263E133AE50DD021 /* PlaceholderTests.swift */,
+				9EE02918BC23F5D2F83AE9FE /* DayResolverTests.swift */,
+				622874269A9F5747E7F0BB2B /* PhaseCalculatorTests.swift */,
 			);
 			path = AltSplitTests;
 			sourceTree = "<group>";
@@ -199,7 +202,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				855A68EEF42BD21ADD4D5A2B /* PlaceholderTests.swift in Sources */,
+				7A48A2B46E36373BCABD22A6 /* DayResolverTests.swift in Sources */,
+				645D423657905C064C35D180 /* PhaseCalculatorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
