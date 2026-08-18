@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -107,7 +107,7 @@
 		622874269A9F5747E7F0BB2B /* PhaseCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseCalculatorTests.swift; sourceTree = "<group>"; };
 		7268FF78605362FED5D51BE3 /* CheckInFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInFlowUITests.swift; sourceTree = "<group>"; };
 		783BB96EE5C9644A32DD07E2 /* BiometricGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricGate.swift; sourceTree = "<group>"; };
-		78DD64093289BE30C18D3477 /* AltSplit.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AltSplit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		78DD64093289BE30C18D3477 /* AltSplit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AltSplit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F784FBE9C4938E7DBC1A46D /* ExerciseFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseFormView.swift; sourceTree = "<group>"; };
 		80978A642946AC08DA06ADCF /* BadgeUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeUpdater.swift; sourceTree = "<group>"; };
 		81889FB5AE000AAFB1435039 /* BadgeUpdaterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeUpdaterTests.swift; sourceTree = "<group>"; };
@@ -395,7 +395,6 @@
 			);
 			mainGroup = ABDFFA4237E2BCFA96A9B09C;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -643,6 +642,7 @@
 				CODE_SIGN_ENTITLEMENTS = AltSplit/AltSplit.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8KB3AN9HSZ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = AltSplit;
 				INFOPLIST_KEY_NSAlarmKitUsageDescription = "Used to schedule workout and weigh-in alarms that break through silent mode.";
@@ -724,6 +724,7 @@
 				CODE_SIGN_ENTITLEMENTS = AltSplit/AltSplit.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8KB3AN9HSZ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = AltSplit;
 				INFOPLIST_KEY_NSAlarmKitUsageDescription = "Used to schedule workout and weigh-in alarms that break through silent mode.";
