@@ -64,10 +64,19 @@ struct HomeView: View {
                         title: "Creatine",
                         isOn: todaysLog?.creatine ?? false,
                         streak: streak(\.creatine),
-                        detail: complianceDetail(\.creatine),
+                        detail: streakDetail(streak(\.creatine)),
                         identifier: "supplementBox.creatine"
                     ) {
                         toggle(\.creatine)
+                    }
+                    SupplementBox(
+                        title: "Multivitamin",
+                        isOn: todaysLog?.multivitamin ?? false,
+                        streak: streak(\.multivitamin),
+                        detail: streakDetail(streak(\.multivitamin)),
+                        identifier: "supplementBox.multivitamin"
+                    ) {
+                        toggle(\.multivitamin)
                     }
                 }
                 .frame(maxHeight: .infinity)
@@ -133,16 +142,5 @@ struct HomeView: View {
 
     private func streakDetail(_ streak: Int) -> String {
         streak == 1 ? "1 day streak" : "\(streak) day streak"
-    }
-
-    /// 30-day consistency, e.g. "26 / 30 days".
-    private func complianceDetail(_ keyPath: KeyPath<SupplementLog, Bool>) -> String {
-        let calendar = Calendar.current
-        let startOfToday = calendar.startOfDay(for: .now)
-        guard let windowStart = calendar.date(byAdding: .day, value: -29, to: startOfToday) else {
-            return "—"
-        }
-        let taken = supplementLogs.filter { $0.day >= windowStart && $0[keyPath: keyPath] }.count
-        return "\(taken) / 30 days"
     }
 }

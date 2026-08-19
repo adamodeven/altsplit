@@ -428,15 +428,19 @@ final class SupplementLog {
     var day: Date
     var protein: Bool
     var creatine: Bool
+    /// Defaulted so SwiftData can lightweight-migrate existing on-disk logs
+    /// (written before this column existed) without a custom migration plan.
+    var multivitamin: Bool = false
 
-    init(day: Date, protein: Bool = false, creatine: Bool = false) {
+    init(day: Date, protein: Bool = false, creatine: Bool = false, multivitamin: Bool = false) {
         self.day = day
         self.protein = protein
         self.creatine = creatine
+        self.multivitamin = multivitamin
     }
 
-    var allTaken: Bool { protein && creatine }
-    var openCount: Int { (protein ? 0 : 1) + (creatine ? 0 : 1) }
+    var allTaken: Bool { protein && creatine && multivitamin }
+    var openCount: Int { (protein ? 0 : 1) + (creatine ? 0 : 1) + (multivitamin ? 0 : 1) }
 }
 
 /// Records a deferred reminder so snoozing is visible rather than free.

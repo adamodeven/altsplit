@@ -144,4 +144,27 @@ final class BuilderFlowUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Split Editor"].waitForExistence(timeout: 3))
         XCTAssertTrue(app.buttons["Current Focus, Legs"].waitForExistence(timeout: 3))
     }
+
+    func testSelectingDoubleSessionTypeAutoGeneratesPhasesForCurrentFocus() {
+        let app = launchApp()
+        app.tabBars.buttons["Builder"].tap()
+        app.buttons["Split Editor"].tap()
+        XCTAssertTrue(app.navigationBars["Split Editor"].waitForExistence(timeout: 3))
+        app.staticTexts["Wednesday"].tap()
+        XCTAssertTrue(app.navigationBars["Wednesday"].waitForExistence(timeout: 3))
+
+        app.buttons["Session Type, Lifting"].tap()
+        XCTAssertTrue(app.buttons["Double"].waitForExistence(timeout: 3))
+        app.buttons["Double"].tap()
+        XCTAssertTrue(app.navigationBars["Wednesday"].waitForExistence(timeout: 3))
+
+        // Default focus is Shoulders; Tuesday is the only day that trains
+        // it, so the double day should preview Tuesday's shoulder work —
+        // not Wednesday's own (now stale) chest/triceps pool.
+        XCTAssertTrue(app.staticTexts["Push Press"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Arnold Press"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Overhead Press"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Lateral Raise"].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.staticTexts["Barbell Bench Press"].exists)
+    }
 }

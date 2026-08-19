@@ -32,6 +32,7 @@ enum BadgeUpdater {
         if !today.isRest && !loggedToday { openItems += 1 }
         if !(todaysLog?.protein ?? false) { openItems += 1 }
         if !(todaysLog?.creatine ?? false) { openItems += 1 }
+        if !(todaysLog?.multivitamin ?? false) { openItems += 1 }
         if checkInDue { openItems += 1 }
         return openItems
     }

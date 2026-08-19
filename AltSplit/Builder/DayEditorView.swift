@@ -3,6 +3,7 @@ import SwiftData
 
 struct DayEditorView: View {
     @Bindable var day: DayTemplate
+    let program: Program
     @Environment(\.modelContext) private var modelContext
 
     @State private var showingExercisePicker = false
@@ -24,8 +25,18 @@ struct DayEditorView: View {
                 }
             }
 
-            poolSection(title: "Phase A", phase: .a, pool: day.poolA)
-            poolSection(title: "Phase B", phase: .b, pool: day.poolB)
+            if day.slotKind == .double {
+                Section {
+                    Text("Double days automatically draw the opposite phase's work for the current focus (\(program.currentFocus.displayName)), from wherever else in the split trains it. Change the focus from Split Editor.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                doubleSection(title: "Phase A", phase: .a, sourcePhase: .b)
+                doubleSection(title: "Phase B", phase: .b, sourcePhase: .a)
+            } else {
+                poolSection(title: "Phase A", phase: .a, pool: day.poolA)
+                poolSection(title: "Phase B", phase: .b, pool: day.poolB)
+            }
         }
         .navigationTitle(day.weekday.displayName)
         .navigationBarTitleDisplayMode(.inline)
@@ -42,6 +53,34 @@ struct DayEditorView: View {
 
     private var groupsSummary: String {
         day.groups.isEmpty ? "None" : day.groups.map(\.displayName).joined(separator: ", ")
+    }
+
+    /// Previews what a double day actually trains: the borrowed exercises
+    /// when a source day matches the current focus, or the day's own
+    /// (editable) fallback pool when nothing matches.
+    @ViewBuilder
+    private func doubleSection(title: String, phase: Phase, sourcePhase: Phase) -> some View {
+        let borrowed = DayResolver(program: program)
+            .borrowedDoubleExercises(for: program.currentFocus, sourcePhase: sourcePhase)
+
+        if borrowed.isEmpty {
+            poolSection(
+                title: "\(title) · No \(program.currentFocus.displayName) work found, using fallback",
+                phase: phase,
+                pool: phase == .a ? day.poolA : day.poolB
+            )
+        } else {
+            Section("\(title) · \(program.currentFocus.displayName)") {
+                ForEach(borrowed, id: \.persistentModelID) { planned in
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(planned.exercise?.name ?? "—")
+                        Text(planned.targetSummary)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        }
     }
 
     @ViewBuilder

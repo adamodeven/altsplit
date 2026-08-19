@@ -35,8 +35,6 @@ struct SetRowView: View {
 
             fields
 
-            Spacer()
-
             Button {
                 let wasComplete = entry.isComplete
                 entry.completedAt = wasComplete ? nil : .now
@@ -57,25 +55,25 @@ struct SetRowView: View {
     private var fields: some View {
         switch type {
         case .lift:
-            field("lb", text: weightBinding, prompt: previousWeightText, keyboard: .decimalPad, width: 72)
+            field("lb", text: weightBinding, prompt: previousWeightText, keyboard: .decimalPad)
                 .focused(focusedField, equals: .weight(entry.persistentModelID))
             Text("×").foregroundStyle(.secondary)
-            field("reps", text: repsBinding, prompt: previousRepsText, keyboard: .numberPad, width: 56)
+            field("reps", text: repsBinding, prompt: previousRepsText, keyboard: .numberPad)
                 .focused(focusedField, equals: .reps(entry.persistentModelID))
 
         case .bodyweight:
-            field("reps", text: repsBinding, prompt: previousRepsText, keyboard: .numberPad, width: 56)
+            field("reps", text: repsBinding, prompt: previousRepsText, keyboard: .numberPad)
                 .focused(focusedField, equals: .reps(entry.persistentModelID))
             Text("+").foregroundStyle(.secondary)
-            field("lb (opt.)", text: weightBinding, prompt: previousWeightText, keyboard: .decimalPad, width: 80)
+            field("lb (opt.)", text: weightBinding, prompt: previousWeightText, keyboard: .decimalPad)
                 .focused(focusedField, equals: .weight(entry.persistentModelID))
 
         case .hold:
-            field("sec", text: durationBinding, prompt: previousDurationText, keyboard: .numberPad, width: 64)
+            field("sec", text: durationBinding, prompt: previousDurationText, keyboard: .numberPad)
                 .focused(focusedField, equals: .duration(entry.persistentModelID))
             Text("seconds").foregroundStyle(.secondary)
             Text("+").foregroundStyle(.secondary)
-            field("lb (opt.)", text: weightBinding, prompt: previousWeightText, keyboard: .decimalPad, width: 80)
+            field("lb (opt.)", text: weightBinding, prompt: previousWeightText, keyboard: .decimalPad)
                 .focused(focusedField, equals: .weight(entry.persistentModelID))
 
         case .erg, .cardio:
@@ -94,13 +92,13 @@ struct SetRowView: View {
         _ title: String,
         text: Binding<String>,
         prompt: String?,
-        keyboard: UIKeyboardType,
-        width: CGFloat
+        keyboard: UIKeyboardType
     ) -> some View {
         TextField(title, text: text, prompt: prompt.map { Text($0) })
             .keyboardType(keyboard)
             .multilineTextAlignment(.center)
-            .frame(width: width, height: 44)
+            .frame(maxWidth: .infinity)
+            .frame(height: 44)
             .background(.fill.tertiary, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 
