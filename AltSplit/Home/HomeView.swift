@@ -17,7 +17,7 @@ struct HomeView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
+            Group {
                 if let program = programs.first {
                     content(for: program)
                         .padding(.horizontal)
@@ -28,7 +28,6 @@ struct HomeView: View {
                         systemImage: "figure.strengthtraining.traditional",
                         description: Text("The default split hasn't been seeded.")
                     )
-                    .padding(.top, 80)
                 }
             }
             .navigationTitle("AltSplit")
@@ -49,11 +48,11 @@ struct HomeView: View {
                     if !today.isRest { showingWorkout = true }
                 }
                 .accessibilityIdentifier("workoutBox")
+                .frame(maxHeight: .infinity)
 
                 HStack(spacing: 16) {
                     SupplementBox(
                         title: "Protein",
-                        symbol: "fork.knife",
                         isOn: todaysLog?.protein ?? false,
                         streak: streak(\.protein),
                         detail: streakDetail(streak(\.protein)),
@@ -63,7 +62,6 @@ struct HomeView: View {
                     }
                     SupplementBox(
                         title: "Creatine",
-                        symbol: "pill.fill",
                         isOn: todaysLog?.creatine ?? false,
                         streak: streak(\.creatine),
                         detail: complianceDetail(\.creatine),
@@ -72,6 +70,7 @@ struct HomeView: View {
                         toggle(\.creatine)
                     }
                 }
+                .frame(maxHeight: .infinity)
 
                 CheckInBox(
                     program: program,
@@ -80,7 +79,9 @@ struct HomeView: View {
                     onTapNotDue: { selection = .progress }
                 )
                 .accessibilityIdentifier("checkInBox")
+                .frame(maxHeight: .infinity)
             }
+            .frame(maxHeight: .infinity)
             .padding(.bottom, 24)
         }
         .fullScreenCover(isPresented: $showingWorkout) {

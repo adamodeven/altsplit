@@ -50,11 +50,13 @@ struct CheckInBox: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .padding(20)
+            .contentShape(BentoBoxStyle.shape)
         }
         .buttonStyle(.plain)
-        .glassEffect(Glass.regular.interactive(), in: .rect(corners: .concentric))
+        .frame(maxHeight: .infinity)
+        .glassEffect(Glass.regular.interactive(), in: BentoBoxStyle.shape)
     }
 
     private var lastWeightSummary: String {

@@ -4,7 +4,6 @@ import SwiftUI
 /// transition — no confirmation, tap again to undo.
 struct SupplementBox: View {
     let title: String
-    let symbol: String
     let isOn: Bool
     let streak: Int
     let detail: String
@@ -18,7 +17,7 @@ struct SupplementBox: View {
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundStyle(.secondary)
-                Image(systemName: isOn ? "\(symbol).circle.fill" : "circle")
+                Image(systemName: isOn ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 36))
                     .foregroundStyle(isOn ? Color.accentColor : Color.secondary)
                     .contentTransition(.symbolEffect(.replace))
@@ -26,11 +25,13 @@ struct SupplementBox: View {
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(.vertical, 16)
+            .contentShape(BentoBoxStyle.shape)
         }
         .buttonStyle(.plain)
-        .glassEffect(Glass.regular.interactive(), in: .rect(corners: .concentric))
+        .frame(maxHeight: .infinity)
+        .glassEffect(Glass.regular.interactive(), in: BentoBoxStyle.shape)
         .animation(.default, value: isOn)
         .accessibilityIdentifier(identifier)
     }

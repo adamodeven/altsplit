@@ -23,13 +23,17 @@ struct WorkoutBox: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .padding(20)
+            .contentShape(BentoBoxStyle.shape)
         }
         .buttonStyle(.plain)
-        .glassEffect(glass, in: .rect(corners: .concentric))
+        .frame(maxHeight: .infinity)
+        .glassEffect(glass, in: BentoBoxStyle.shape)
         .contextMenu {
-            // No actions beyond the preview itself yet.
+            Button(action: onTap) {
+                Label("Start Workout", systemImage: "play.fill")
+            }
         } preview: {
             WorkoutPreviewList(day: day)
         }
