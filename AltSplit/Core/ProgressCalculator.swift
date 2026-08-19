@@ -52,10 +52,18 @@ enum ProgressCalculator {
     }
 
     /// Best Epley estimate per session for one exercise, across time.
+    ///
+    /// Scoped to standard-modality sets: a tempo or eccentric set is
+    /// deliberately loaded lighter, so folding it into the same trend line
+    /// as straight sets would read as a strength drop that never happened.
     static func oneRepMaxTrend(exercise: Exercise, sessions: [WorkoutSession]) -> [OneRepMaxPoint] {
         sessions.compactMap { session in
             let best = session.entries
-                .filter { $0.exercise?.persistentModelID == exercise.persistentModelID && $0.isComplete }
+                .filter {
+                    $0.exercise?.persistentModelID == exercise.persistentModelID
+                        && $0.isComplete
+                        && $0.modality == .standard
+                }
                 .compactMap(\.estimatedOneRepMax)
                 .max()
             return best.map { OneRepMaxPoint(date: session.date, estimatedOneRepMax: $0) }
@@ -99,10 +107,14 @@ enum ProgressCalculator {
     /// Every set that beat its exercise's previous best volume, walking
     /// forward through time — cheap to compute, disproportionately
     /// motivating to see.
+    ///
+    /// Scoped to standard-modality sets, same reasoning as `oneRepMaxTrend`:
+    /// a lighter tempo or eccentric set should never "beat" a straight-set
+    /// PR just because it happened to move more total volume.
     static func personalRecords(sessions: [WorkoutSession]) -> [PersonalRecord] {
         var byExercise: [PersistentIdentifier: [(session: WorkoutSession, entry: SetEntry)]] = [:]
         for session in sessions {
-            for entry in session.entries where entry.isComplete && entry.volume > 0 {
+            for entry in session.entries where entry.isComplete && entry.volume > 0 && entry.modality == .standard {
                 guard let exercise = entry.exercise else { continue }
                 byExercise[exercise.persistentModelID, default: []].append((session, entry))
             }
@@ -115,7 +127,11 @@ enum ProgressCalculator {
             for pair in chronological where pair.entry.volume > best {
                 best = pair.entry.volume
                 guard let exercise = pair.entry.exercise else { continue }
-                let summary = [pair.entry.weight.map { "\(Int($0))" }, pair.entry.reps.map { "\($0)" }]
+                let unit = pair.session.preferredUnit
+                let summary = [
+                    pair.entry.weight(in: unit).map { "\(Int($0)) \(unit.symbol)" },
+                    pair.entry.reps.map { "\($0)" },
+                ]
                     .compactMap { $0 }
                     .joined(separator: " × ")
                 records.append(PersonalRecord(

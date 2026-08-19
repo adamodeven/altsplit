@@ -13,7 +13,6 @@ struct ExerciseFormView: View {
 
     @State private var name: String
     @State private var type: ExerciseType
-    @State private var modality: Modality
     @State private var muscleGroup: MuscleGroup?
     @State private var equipment: Equipment
 
@@ -21,7 +20,6 @@ struct ExerciseFormView: View {
         self.existing = existing
         _name = State(initialValue: existing?.name ?? "")
         _type = State(initialValue: existing?.type ?? .lift)
-        _modality = State(initialValue: existing?.modality ?? .standard)
         _muscleGroup = State(initialValue: existing?.muscleGroup)
         _equipment = State(initialValue: existing?.equipment ?? .other)
     }
@@ -37,9 +35,6 @@ struct ExerciseFormView: View {
                 Section("Type") {
                     Picker("Type", selection: $type) {
                         ForEach(ExerciseType.allCases, id: \.self) { Text($0.displayName).tag($0) }
-                    }
-                    Picker("Modality", selection: $modality) {
-                        ForEach(Modality.allCases, id: \.self) { Text($0.displayName).tag($0) }
                     }
                 }
 
@@ -83,14 +78,12 @@ struct ExerciseFormView: View {
         if let existing {
             existing.name = trimmedName
             existing.type = type
-            existing.modality = modality
             existing.muscleGroup = type == .erg || type == .cardio ? nil : muscleGroup
             existing.equipment = equipment
         } else {
             let exercise = Exercise(
                 name: trimmedName,
                 type: type,
-                modality: modality,
                 muscleGroup: type == .erg || type == .cardio ? nil : muscleGroup,
                 equipment: equipment,
                 isUserCreated: true

@@ -45,7 +45,6 @@ struct ExerciseLibraryTests {
         #expect(fetched.allSatisfy { !$0.isUserCreated })
         for spec in ExerciseLibrary.all {
             #expect(lookup[spec.name]?.type == spec.type)
-            #expect(lookup[spec.name]?.modality == spec.modality)
             #expect(lookup[spec.name]?.muscleGroup == spec.muscleGroup)
         }
     }

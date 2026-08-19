@@ -89,13 +89,19 @@ Two orthogonal axes. Conflating them is the mistake.
 
 **`modality`** is a descriptive tag: `.standard`, `.plyometric`, `.eccentric`,
 `.isometric`, `.tempo`. It drives A/B differentiation and filtering ("show me
-all my eccentric chest work").
+all my eccentric chest work"). It is set per `PlannedExercise` slot, not on
+`Exercise` — most movements can be trained several ways, and tagging the
+exercise itself would force a separate library entry per variant (a "Squat"
+and a "Tempo Squat"). Picking it per slot instead means the same "Squat" can
+appear twice in a pool — once standard, once tempo — without duplicating the
+exercise, and `SetEntry` copies it at log time so history stays queryable by
+stimulus.
 
 The axes correlate but are not the same. A plyometric push-up is
-`type: .bodyweight, modality: .plyometric` — logged exactly like a normal
-push-up. A wall sit is `type: .hold, modality: .isometric` — logged in
-seconds. Tempo bench is `type: .lift, modality: .tempo` with a tempo string in
-notes.
+`type: .bodyweight` scheduled with `modality: .plyometric` — logged exactly
+like a normal push-up. A wall sit is `type: .hold` with `modality:
+.isometric` — logged in seconds. Tempo bench is `type: .lift` with `modality:
+.tempo` and a tempo string in notes.
 
 ---
 
@@ -117,7 +123,6 @@ WeekTemplate                       // defined once, shared by both phases
 Exercise
   name: String
   type: .lift | .hold | .bodyweight | .erg | .cardio
-  modality: .standard | .plyometric | .eccentric | .isometric | .tempo
   muscleGroup: MuscleGroup?        // nil for erg/cardio
   equipment: Equipment
   isUserCreated: Bool
@@ -129,6 +134,7 @@ PlannedExercise
   targetDuration: TimeInterval?
   restSeconds: Int
   notes: String?
+  modality: .standard | .plyometric | .eccentric | .isometric | .tempo
 
 WorkoutSession
   date: Date
@@ -142,6 +148,7 @@ SetEntry
   setIndex: Int
   weight: Double?                  // canonical KILOGRAMS, always
   reps: Int?
+  modality: Modality                // copied from the PlannedExercise it was logged against
   duration: TimeInterval?
   rpe: Double?
   isWarmup: Bool
@@ -353,18 +360,21 @@ would hurt readability for every series in this app.
 - Pick muscle groups per weekday.
 - For each day, edit the phase A pool and the phase B pool side by side, so
   the differentiation between them is visible while you make it.
-- Add exercises from the library, set target sets / reps / rest.
+- Add exercises from the library, set target sets / reps / rest / modality.
 - Reorder within a day.
 - Set the double day focus.
 
 ### Exercise library
 
 - Preloaded with a solid default library covering the standard movements for
-  each muscle group, plus erg pieces.
-- Add custom exercises with type, modality, muscle group, and equipment.
-- Filter by muscle group, type, modality, equipment.
-- Each exercise shows where it is used in the split and its history, so you
-  can tell at a glance whether it is actually earning its slot.
+  each muscle group, plus erg pieces. No modality-specific duplicates (no
+  "Tempo Squat" alongside "Squat") — modality is picked when an exercise is
+  scheduled, not when it's added to the library.
+- Add custom exercises with type, muscle group, and equipment.
+- Filter by muscle group, type.
+- Each exercise shows where it is used in the split (including which
+  modality each slot uses) and its history, so you can tell at a glance
+  whether it is actually earning its slot.
 - User-created exercises are flagged so a library refresh never overwrites
   them.
 
@@ -413,6 +423,7 @@ purchase.
 - Escalating notification cascade behind `ReminderScheduler`, plus badge
 - Builder: split editor and exercise library
 - Progress: body and lifting
+- **One-tap lb ⇄ kg switching** (see below)
 
 **v2 — after the $99**
 
@@ -429,7 +440,6 @@ purchase.
 - Erg-specific logging depth and erg progress charts
 - Focus suggestions computed from trailing volume
 - Plate maths, supersets, warmup auto-generation
-- **One-tap lb ⇄ kg switching** (see below)
 
 ### Unit switching
 
@@ -442,10 +452,9 @@ Design constraints this implies:
 - **Weight is stored canonically in kilograms, always.** The toggle is a
   display and entry-conversion concern that never mutates stored values, so
   flipping units mid-workout cannot corrupt history and every chart stays
-  comparable regardless of what was typed. This needs to be true from the
-  first line of the logger — retrofitting a canonical unit after real data
-  exists is a migration, so it is noted here despite the feature itself being
-  later.
+  comparable regardless of what was typed. True from the first line of the
+  logger, since retrofitting a canonical unit after real data exists is a
+  migration.
 - Preference persists on the `WorkoutSession` (so a session reviewed later
   reads back the way it was entered), over a global default in settings.
 - Display rounding to sensible increments — 0.5 lb, 0.25 kg — while keeping
@@ -454,3 +463,29 @@ Design constraints this implies:
 - Plate maths, when it arrives, has to follow the active unit: 45/25/10/5/2.5
   lb versus 20/15/10/5/2.5 kg are different plate sets, not a conversion of
   one another.
+
+---
+
+## v4 — meal reminders
+
+The instinct is "diet tracking," but the actual problem is narrower: meals get
+forgotten or deferred until there isn't time left to eat enough of them. Food
+quality is not the issue — when a meal happens it's usually a good one with
+protein. So this is not a logging feature, it's an extension of the
+accountability system.
+
+- **Reminder-first, not log-first.** The value is a nudge *before* a meal
+  window closes, not a record filed after the fact. A retroactive counter
+  doesn't solve "ran out of time to eat," it just documents that it happened
+  again.
+- **Meal-window cascade**, same escalating pattern as the workout/weigh-in
+  reminders (e.g. prompts around midday / afternoon / evening if nothing's
+  been logged for that window yet), cancelling the moment it's logged.
+- **The log itself is a single tap** — "ate a meal," no detail, no macros.
+  Same shape as `SupplementLog`: `MealLog { date, count }`.
+- **Badge count** includes open meal windows for the day, same mechanism as
+  open workout/supplement items.
+
+Prioritize the reminder cascade over the counter if this gets built —
+the counter alone is after-the-fact guilt, the reminder is the part that
+actually gets a meal eaten.

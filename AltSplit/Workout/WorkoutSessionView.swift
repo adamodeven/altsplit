@@ -6,7 +6,7 @@ import SwiftData
 private struct ExerciseLogGroup: Identifiable {
     let id: PersistentIdentifier
     let planned: PlannedExercise
-    let entries: [SetEntry]
+    var entries: [SetEntry]
 }
 
 /// The active workout logger. Created fresh every time the workout box is
@@ -18,6 +18,7 @@ struct WorkoutSessionView: View {
     @Environment(\.dismiss) private var dismiss
 
     @Query(sort: \SetEntry.completedAt, order: .reverse) private var completedEntries: [SetEntry]
+    @Query(sort: \WorkoutSession.date, order: .reverse) private var recentSessions: [WorkoutSession]
 
     @State private var session: WorkoutSession?
     @State private var groups: [ExerciseLogGroup] = []
@@ -26,6 +27,10 @@ struct WorkoutSessionView: View {
     @State private var restRemaining: Int?
     @State private var restTotal: Int = 0
     @State private var restTask: Task<Void, Never>?
+    /// The set whose checkmark started the active rest timer — unchecking
+    /// this specific set should cancel that timer, but unchecking some
+    /// other already-completed set shouldn't touch it.
+    @State private var restSourceEntryID: PersistentIdentifier?
 
     @FocusState private var focusedField: SetField?
 
@@ -52,14 +57,15 @@ struct WorkoutSessionView: View {
                 ToolbarItem(placement: .principal) {
                     ElapsedTimeLabel(start: startedAt)
                 }
+                if day.slotKind != .cardio {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button(unit.symbol) { toggleUnit() }
+                            .accessibilityLabel("Change weight unit")
+                    }
+                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Finish") { finish() }
                         .fontWeight(.semibold)
-                }
-                ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
-                    Button("Next") { advanceFocus() }
-                        .disabled(!hasNextField)
                 }
             }
             .safeAreaInset(edge: .bottom) {
@@ -74,13 +80,15 @@ struct WorkoutSessionView: View {
     private var liftForm: some View {
         List {
             ForEach(groups) { group in
-                Section(group.planned.exercise?.name ?? "—") {
+                Section {
                     ForEach(group.entries) { entry in
                         SetRowView(
                             entry: entry,
                             type: group.planned.exercise?.type ?? .lift,
+                            unit: unit,
                             previous: previousEntry(for: group.planned.exercise, setIndex: entry.setIndex),
-                            onComplete: { startRest(seconds: group.planned.restSeconds) },
+                            onComplete: { startRest(seconds: group.planned.restSeconds, sourceEntryID: entry.persistentModelID) },
+                            onUncomplete: { cancelRestIfSource(entry.persistentModelID) },
                             focusedField: $focusedField
                         )
                     }
@@ -89,6 +97,13 @@ struct WorkoutSessionView: View {
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
+                } header: {
+                    ExerciseGroupHeader(
+                        title: group.planned.displayTitle,
+                        canRemoveSet: group.entries.count > 1,
+                        onAddSet: { addSet(to: group.id) },
+                        onRemoveSet: { removeSet(from: group.id) }
+                    )
                 }
             }
         }
@@ -118,6 +133,17 @@ struct WorkoutSessionView: View {
         }
     }
 
+    // MARK: - Units
+
+    /// Falls back to pounds only once no prior session exists to read a
+    /// preference from — kept off of Settings deliberately (see DESIGN.md)
+    /// so a session reviewed later always reads back as it was entered.
+    private var unit: UnitMass { session?.preferredUnit ?? recentSessions.first?.preferredUnit ?? .pounds }
+
+    private func toggleUnit() {
+        session?.preferredUnit = unit == .pounds ? .kilograms : .pounds
+    }
+
     // MARK: - Session lifecycle
 
     private func ensureSessionExists() {
@@ -129,7 +155,8 @@ struct WorkoutSessionView: View {
             weekday: day.weekday,
             status: .partial,
             focusGroup: day.focusGroup,
-            startedAt: .now
+            startedAt: .now,
+            preferredUnit: recentSessions.first?.preferredUnit ?? .pounds
         )
         modelContext.insert(newSession)
         startedAt = newSession.startedAt ?? .now
@@ -139,7 +166,7 @@ struct WorkoutSessionView: View {
             for planned in day.exercises {
                 var entries: [SetEntry] = []
                 for index in 0..<max(planned.targetSets, 1) {
-                    let entry = SetEntry(exercise: planned.exercise, setIndex: index)
+                    let entry = SetEntry(exercise: planned.exercise, setIndex: index, modality: planned.modality)
                     modelContext.insert(entry)
                     newSession.entries.append(entry)
                     entries.append(entry)
@@ -190,6 +217,26 @@ struct WorkoutSessionView: View {
         dismiss()
     }
 
+    // MARK: - Live set count
+
+    private func addSet(to groupID: PersistentIdentifier) {
+        guard let index = groups.firstIndex(where: { $0.id == groupID }) else { return }
+        let group = groups[index]
+        let entry = SetEntry(exercise: group.planned.exercise, setIndex: group.entries.count, modality: group.planned.modality)
+        modelContext.insert(entry)
+        session?.entries.append(entry)
+        groups[index].entries.append(entry)
+    }
+
+    private func removeSet(from groupID: PersistentIdentifier) {
+        guard let index = groups.firstIndex(where: { $0.id == groupID }) else { return }
+        guard groups[index].entries.count > 1, let last = groups[index].entries.last else { return }
+        cancelRestIfSource(last.persistentModelID)
+        groups[index].entries.removeLast()
+        session?.entries.removeAll { $0.persistentModelID == last.persistentModelID }
+        modelContext.delete(last)
+    }
+
     // MARK: - Previous performance
 
     /// Last time this exercise was logged, preferring the same set index so
@@ -205,37 +252,11 @@ struct WorkoutSessionView: View {
         return candidates.first { $0.setIndex == setIndex } ?? candidates.first
     }
 
-    // MARK: - Keyboard focus
-
-    private var orderedFields: [SetField] {
-        groups.flatMap { group -> [SetField] in
-            let type = group.planned.exercise?.type ?? .lift
-            return group.entries.flatMap { entry -> [SetField] in
-                switch type {
-                case .lift: [.weight(entry.persistentModelID), .reps(entry.persistentModelID)]
-                case .bodyweight: [.reps(entry.persistentModelID), .weight(entry.persistentModelID)]
-                case .hold: [.duration(entry.persistentModelID), .weight(entry.persistentModelID)]
-                case .erg, .cardio: []
-                }
-            }
-        }
-    }
-
-    private var hasNextField: Bool {
-        guard let focusedField, let index = orderedFields.firstIndex(of: focusedField) else { return false }
-        return index + 1 < orderedFields.count
-    }
-
-    private func advanceFocus() {
-        guard let focusedField, let index = orderedFields.firstIndex(of: focusedField) else { return }
-        let nextIndex = index + 1
-        self.focusedField = nextIndex < orderedFields.count ? orderedFields[nextIndex] : nil
-    }
-
     // MARK: - Rest timer
 
-    private func startRest(seconds: Int) {
+    private func startRest(seconds: Int, sourceEntryID: PersistentIdentifier) {
         restTask?.cancel()
+        restSourceEntryID = sourceEntryID
         guard seconds > 0 else {
             restRemaining = nil
             return
@@ -258,6 +279,15 @@ struct WorkoutSessionView: View {
     private func skipRest() {
         restTask?.cancel()
         restRemaining = nil
+        restSourceEntryID = nil
+    }
+
+    /// Called when a set is unchecked — only cancels the timer if that set
+    /// is the one that started it, so unchecking an older, unrelated set
+    /// doesn't kill the timer for the one in progress.
+    private func cancelRestIfSource(_ entryID: PersistentIdentifier) {
+        guard restSourceEntryID == entryID else { return }
+        skipRest()
     }
 }
 
@@ -277,6 +307,37 @@ private struct ElapsedTimeLabel: View {
     private func formatted(_ interval: TimeInterval) -> String {
         let seconds = max(0, Int(interval))
         return String(format: "%d:%02d", seconds / 60, seconds % 60)
+    }
+}
+
+/// Section header for a logged exercise, with inline +/- controls so the
+/// number of sets can be adjusted live as the workout is performed instead
+/// of only ever matching the planned target.
+private struct ExerciseGroupHeader: View {
+    let title: String
+    let canRemoveSet: Bool
+    let onAddSet: () -> Void
+    let onRemoveSet: () -> Void
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Text(title)
+            Spacer()
+            Button(action: onRemoveSet) {
+                Image(systemName: "minus.circle")
+            }
+            .disabled(!canRemoveSet)
+            .accessibilityLabel("Remove set")
+
+            Button(action: onAddSet) {
+                Image(systemName: "plus.circle")
+            }
+            .accessibilityLabel("Add set")
+        }
+        .buttonStyle(.plain)
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
+        .imageScale(.medium)
     }
 }
 

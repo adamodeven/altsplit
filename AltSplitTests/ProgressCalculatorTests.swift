@@ -70,8 +70,8 @@ struct ProgressCalculatorTests {
 
         let session = WorkoutSession(date: date(0), phase: .a, weekday: .monday, status: .completed)
         context.insert(session)
-        let weak = SetEntry(exercise: exercise, setIndex: 0, weight: 100, reps: 10, completedAt: date(0))
-        let strong = SetEntry(exercise: exercise, setIndex: 1, weight: 150, reps: 5, completedAt: date(0))
+        let weak = SetEntry(exercise: exercise, setIndex: 0, weightKilograms: 100, reps: 10, completedAt: date(0))
+        let strong = SetEntry(exercise: exercise, setIndex: 1, weightKilograms: 150, reps: 5, completedAt: date(0))
         context.insert(weak)
         context.insert(strong)
         session.entries = [weak, strong]
@@ -87,7 +87,7 @@ struct ProgressCalculatorTests {
         context.insert(exercise)
         let session = WorkoutSession(date: date(0), phase: .a, weekday: .monday, status: .partial)
         context.insert(session)
-        let incomplete = SetEntry(exercise: exercise, setIndex: 0, weight: 200, reps: 5, completedAt: nil)
+        let incomplete = SetEntry(exercise: exercise, setIndex: 0, weightKilograms: 200, reps: 5, completedAt: nil)
         context.insert(incomplete)
         session.entries = [incomplete]
 
@@ -108,9 +108,9 @@ struct ProgressCalculatorTests {
         context.insert(session0)
         context.insert(session1)
 
-        let e1 = SetEntry(exercise: chest, setIndex: 0, weight: 100, reps: 10, completedAt: date(0)) // volume 1000
-        let e2 = SetEntry(exercise: back, setIndex: 0, weight: 80, reps: 10, completedAt: date(0)) // volume 800
-        let e3 = SetEntry(exercise: chest, setIndex: 0, weight: 110, reps: 10, completedAt: date(14)) // volume 1100
+        let e1 = SetEntry(exercise: chest, setIndex: 0, weightKilograms: 100, reps: 10, completedAt: date(0)) // volume 1000
+        let e2 = SetEntry(exercise: back, setIndex: 0, weightKilograms: 80, reps: 10, completedAt: date(0)) // volume 800
+        let e3 = SetEntry(exercise: chest, setIndex: 0, weightKilograms: 110, reps: 10, completedAt: date(14)) // volume 1100
         context.insert(e1); context.insert(e2); context.insert(e3)
         session0.entries = [e1, e2]
         session1.entries = [e3]
@@ -135,9 +135,9 @@ struct ProgressCalculatorTests {
         let s3 = WorkoutSession(date: date(14), phase: .a, weekday: .monday, status: .completed)
         context.insert(s1); context.insert(s2); context.insert(s3)
 
-        let e1 = SetEntry(exercise: exercise, setIndex: 0, weight: 100, reps: 5, completedAt: date(0)) // vol 500 -> PR
-        let e2 = SetEntry(exercise: exercise, setIndex: 0, weight: 90, reps: 5, completedAt: date(7)) // vol 450 -> not a PR
-        let e3 = SetEntry(exercise: exercise, setIndex: 0, weight: 120, reps: 5, completedAt: date(14)) // vol 600 -> PR
+        let e1 = SetEntry(exercise: exercise, setIndex: 0, weightKilograms: 100, reps: 5, completedAt: date(0)) // vol 500 -> PR
+        let e2 = SetEntry(exercise: exercise, setIndex: 0, weightKilograms: 90, reps: 5, completedAt: date(7)) // vol 450 -> not a PR
+        let e3 = SetEntry(exercise: exercise, setIndex: 0, weightKilograms: 120, reps: 5, completedAt: date(14)) // vol 600 -> PR
         context.insert(e1); context.insert(e2); context.insert(e3)
         s1.entries = [e1]; s2.entries = [e2]; s3.entries = [e3]
 
@@ -157,9 +157,9 @@ struct ProgressCalculatorTests {
         let sessionB = WorkoutSession(date: date(7), phase: .b, weekday: .tuesday, status: .completed)
         context.insert(sessionA); context.insert(sessionB)
 
-        let a1 = SetEntry(exercise: exercise, setIndex: 0, weight: 50, reps: 10, completedAt: date(0)) // 500
-        let a2 = SetEntry(exercise: exercise, setIndex: 1, weight: 50, reps: 8, completedAt: date(0)) // 400
-        let b1 = SetEntry(exercise: exercise, setIndex: 0, weight: 40, reps: 6, completedAt: date(7)) // 240
+        let a1 = SetEntry(exercise: exercise, setIndex: 0, weightKilograms: 50, reps: 10, completedAt: date(0)) // 500
+        let a2 = SetEntry(exercise: exercise, setIndex: 1, weightKilograms: 50, reps: 8, completedAt: date(0)) // 400
+        let b1 = SetEntry(exercise: exercise, setIndex: 0, weightKilograms: 40, reps: 6, completedAt: date(7)) // 240
         context.insert(a1); context.insert(a2); context.insert(b1)
         sessionA.entries = [a1, a2]
         sessionB.entries = [b1]

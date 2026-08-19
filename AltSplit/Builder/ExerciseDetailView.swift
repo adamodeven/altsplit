@@ -15,7 +15,6 @@ struct ExerciseDetailView: View {
         List {
             Section("Details") {
                 LabeledContent("Type", value: exercise.type.displayName)
-                LabeledContent("Modality", value: exercise.modality.displayName)
                 if let group = exercise.muscleGroup {
                     LabeledContent("Muscle Group", value: group.displayName)
                 }
@@ -65,14 +64,19 @@ struct ExerciseDetailView: View {
         guard let program = programs.first else { return [] }
         var results: [String] = []
         for day in program.days.sorted(by: { $0.weekday < $1.weekday }) {
-            if day.poolA.contains(where: { $0.exercise?.persistentModelID == exercise.persistentModelID }) {
-                results.append("\(day.weekday.displayName) · Phase A")
+            for planned in day.poolA where planned.exercise?.persistentModelID == exercise.persistentModelID {
+                results.append(usageLabel(day: day, phase: "Phase A", planned: planned))
             }
-            if day.poolB.contains(where: { $0.exercise?.persistentModelID == exercise.persistentModelID }) {
-                results.append("\(day.weekday.displayName) · Phase B")
+            for planned in day.poolB where planned.exercise?.persistentModelID == exercise.persistentModelID {
+                results.append(usageLabel(day: day, phase: "Phase B", planned: planned))
             }
         }
         return results
+    }
+
+    private func usageLabel(day: DayTemplate, phase: String, planned: PlannedExercise) -> String {
+        let base = "\(day.weekday.displayName) · \(phase)"
+        return planned.modality == .standard ? base : "\(base) · \(planned.modality.displayName)"
     }
 
     private var loggedEntries: [SetEntry] {
@@ -81,16 +85,20 @@ struct ExerciseDetailView: View {
             .sorted { ($0.completedAt ?? .distantPast) > ($1.completedAt ?? .distantPast) }
     }
 
+    /// Scoped to standard-modality sets — a tempo or eccentric set is
+    /// deliberately lighter, so mixing it into "best set" would understate
+    /// or misrepresent the exercise's real strength number.
     private var bestSetDescription: String? {
+        let standardEntries = loggedEntries.filter { $0.modality == .standard }
         switch exercise.type {
         case .lift, .bodyweight:
-            guard let best = loggedEntries.max(by: { $0.volume < $1.volume }), best.volume > 0 else { return nil }
-            if let weight = best.weight, let reps = best.reps {
-                return "\(weight.formatted()) × \(reps)"
+            guard let best = standardEntries.max(by: { $0.volume < $1.volume }), best.volume > 0 else { return nil }
+            if let weight = best.weight(in: .pounds), let reps = best.reps {
+                return "\(weight.formatted()) \(UnitMass.pounds.symbol) × \(reps)"
             }
             return nil
         case .hold:
-            guard let best = loggedEntries.compactMap(\.duration).max() else { return nil }
+            guard let best = standardEntries.compactMap(\.duration).max() else { return nil }
             return "\(Int(best))s"
         case .erg, .cardio:
             return nil

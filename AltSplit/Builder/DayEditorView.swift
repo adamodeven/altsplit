@@ -73,7 +73,7 @@ struct DayEditorView: View {
             Section("\(title) · \(program.currentFocus.displayName)") {
                 ForEach(borrowed, id: \.persistentModelID) { planned in
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(planned.exercise?.name ?? "—")
+                        Text(planned.displayTitle)
                         Text(planned.targetSummary)
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -92,7 +92,7 @@ struct DayEditorView: View {
                 } label: {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(planned.exercise?.name ?? "—")
+                            Text(planned.displayTitle)
                                 .foregroundStyle(.primary)
                             Text(planned.targetSummary)
                                 .font(.caption)

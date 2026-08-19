@@ -23,18 +23,23 @@ enum DefaultProgram {
 
         func reps(
             _ name: String, order: Int,
-            sets: Int = 3, reps: ClosedRange<Int> = 8...12, rest: Int = 90
+            sets: Int = 3, reps: ClosedRange<Int> = 8...12, rest: Int = 90,
+            modality: Modality = .standard
         ) -> PlannedExercise {
-            PlannedExercise(exercise: ex(name), order: order, targetSets: sets, targetRepRange: reps, restSeconds: rest)
+            PlannedExercise(
+                exercise: ex(name), order: order, targetSets: sets, targetRepRange: reps,
+                restSeconds: rest, modality: modality
+            )
         }
 
         func hold(
             _ name: String, order: Int,
-            sets: Int = 3, duration: TimeInterval = 30, rest: Int = 60
+            sets: Int = 3, duration: TimeInterval = 30, rest: Int = 60,
+            modality: Modality = .standard
         ) -> PlannedExercise {
             PlannedExercise(
                 exercise: ex(name), order: order, targetSets: sets,
-                targetRepRange: nil, targetDuration: duration, restSeconds: rest
+                targetRepRange: nil, targetDuration: duration, restSeconds: rest, modality: modality
             )
         }
 
@@ -62,9 +67,9 @@ enum DefaultProgram {
                 // emphasis instead of straight sets — same groups, different
                 // stimulus.
                 reps("Pull-Up", order: 0, reps: 6...10),
-                reps("Eccentric Pull-Up", order: 1, sets: 3, reps: 4...6, rest: 120),
+                reps("Pull-Up", order: 1, sets: 3, reps: 4...6, rest: 120, modality: .eccentric),
                 reps("Cable Curl", order: 2),
-                reps("Eccentric Dumbbell Curl", order: 3, reps: 6...8),
+                reps("Dumbbell Curl", order: 3, reps: 6...8, modality: .eccentric),
             ]
         )
 
@@ -85,7 +90,7 @@ enum DefaultProgram {
                 // instead of a strict one.
                 reps("Front Squat", order: 0, sets: 4, reps: 5...8, rest: 150),
                 reps("Bulgarian Split Squat", order: 1, reps: 8...10),
-                reps("Push Press", order: 2, sets: 4, reps: 3...5, rest: 120),
+                reps("Push Press", order: 2, sets: 4, reps: 3...5, rest: 120, modality: .plyometric),
                 reps("Arnold Press", order: 3),
             ]
         )
@@ -107,7 +112,7 @@ enum DefaultProgram {
                 reps("Decline Barbell Press", order: 0, sets: 4, reps: 5...8, rest: 150),
                 reps("Cable Fly", order: 1, reps: 12...15, rest: 60),
                 reps("Skull Crusher", order: 2),
-                reps("Diamond Push-Up", order: 3, reps: 10...15, rest: 60),
+                reps("Diamond Push-Up", order: 3, reps: 10...15, rest: 60, modality: .plyometric),
             ]
         )
 

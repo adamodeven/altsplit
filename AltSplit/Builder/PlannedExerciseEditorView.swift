@@ -25,6 +25,10 @@ struct PlannedExerciseEditorView: View {
         NavigationStack {
             Form {
                 Section(planned.exercise?.name ?? "Exercise") {
+                    Picker("Modality", selection: $planned.modality) {
+                        ForEach(Modality.allCases, id: \.self) { Text($0.displayName).tag($0) }
+                    }
+
                     Stepper("Sets: \(planned.targetSets)", value: $planned.targetSets, in: 1...10)
 
                     switch type {

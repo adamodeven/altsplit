@@ -46,7 +46,7 @@ final class ProgressFlowUITests: XCTestCase {
         app.buttons["Lifting"].tap()
         XCTAssertTrue(app.staticTexts["Personal Records"].waitForExistence(timeout: 3))
         XCTAssertFalse(app.staticTexts["No PRs logged yet."].exists)
-        XCTAssertTrue(app.staticTexts["135 × 8"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["135 lb × 8"].waitForExistence(timeout: 3))
     }
 
     func testSavingACheckInShowsUpInBodyProgress() {

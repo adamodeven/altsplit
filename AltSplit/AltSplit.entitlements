@@ -2,17 +2,5 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!--
-	  Intentionally empty.
-
-	  com.apple.developer.alarmkit is a restricted entitlement and cannot be
-	  issued to a personal team — automatic signing fails outright with it
-	  present rather than degrading. Restore it here after the paid developer
-	  membership is bought; AlarmScheduler is written to light up on its own
-	  once AlarmManager reports authorization.
-
-	  Same applies to App Groups, HealthKit, and CloudKit: if a capability
-	  needs an entitlement, it needs the membership.
-	-->
 </dict>
 </plist>

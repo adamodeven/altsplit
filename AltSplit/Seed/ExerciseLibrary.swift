@@ -3,32 +3,29 @@ import SwiftData
 
 /// The default exercise library, seeded once on first launch.
 ///
-/// `type` drives the logging UI; `modality` is an orthogonal descriptive tag
-/// used to differentiate phase A from phase B on the same muscle group. Every
-/// entry here is `isUserCreated == false` so a future library refresh can
-/// safely leave user-created exercises alone.
+/// `type` drives the logging UI. There is deliberately no `modality` here —
+/// it's picked per `PlannedExercise` slot instead (see `Models.swift`), so
+/// e.g. a tempo squat is "Back Squat" scheduled with `modality: .tempo`, not
+/// a separate "Tempo Squat" library entry. Every entry here is
+/// `isUserCreated == false` so a future library refresh can safely leave
+/// user-created exercises alone.
 enum ExerciseLibrary {
     struct Spec {
         let name: String
         let type: ExerciseType
         let muscleGroup: MuscleGroup?
         let equipment: Equipment
-        let modality: Modality
 
-        /// `modality` trails with a default so most call sites — which are
-        /// all `.standard` — can omit it positionally.
         init(
             _ name: String,
             _ type: ExerciseType,
             _ muscleGroup: MuscleGroup?,
-            _ equipment: Equipment,
-            _ modality: Modality = .standard
+            _ equipment: Equipment
         ) {
             self.name = name
             self.type = type
             self.muscleGroup = muscleGroup
             self.equipment = equipment
-            self.modality = modality
         }
     }
 
@@ -42,8 +39,6 @@ enum ExerciseLibrary {
         Spec("Cable Fly", .lift, .chest, .cable),
         Spec("Dumbbell Pullover", .lift, .chest, .dumbbell),
         Spec("Push-Up", .bodyweight, .chest, .bodyweight),
-        Spec("Plyometric Push-Up", .bodyweight, .chest, .bodyweight, .plyometric),
-        Spec("Tempo Bench Press", .lift, .chest, .barbell, .tempo),
     ]
 
     static let back: [Spec] = [
@@ -54,7 +49,6 @@ enum ExerciseLibrary {
         Spec("Seated Cable Row", .lift, .back, .cable),
         Spec("Single-Arm Dumbbell Row", .lift, .back, .dumbbell),
         Spec("T-Bar Row", .lift, .back, .machine),
-        Spec("Eccentric Pull-Up", .bodyweight, .back, .bodyweight, .eccentric),
     ]
 
     static let shoulders: [Spec] = [
@@ -64,8 +58,8 @@ enum ExerciseLibrary {
         Spec("Cable Lateral Raise", .lift, .shoulders, .cable),
         Spec("Front Raise", .lift, .shoulders, .dumbbell),
         Spec("Face Pull", .lift, .shoulders, .cable),
-        Spec("Push Press", .lift, .shoulders, .barbell, .plyometric),
-        Spec("Handstand Hold", .hold, .shoulders, .bodyweight, .isometric),
+        Spec("Push Press", .lift, .shoulders, .barbell),
+        Spec("Handstand Hold", .hold, .shoulders, .bodyweight),
     ]
 
     static let biceps: [Spec] = [
@@ -75,7 +69,6 @@ enum ExerciseLibrary {
         Spec("Cable Curl", .lift, .biceps, .cable),
         Spec("Preacher Curl", .lift, .biceps, .machine),
         Spec("Chin-Up", .bodyweight, .biceps, .bodyweight),
-        Spec("Eccentric Dumbbell Curl", .lift, .biceps, .dumbbell, .eccentric),
     ]
 
     static let triceps: [Spec] = [
@@ -85,7 +78,6 @@ enum ExerciseLibrary {
         Spec("Skull Crusher", .lift, .triceps, .barbell),
         Spec("Dip", .bodyweight, .triceps, .bodyweight),
         Spec("Diamond Push-Up", .bodyweight, .triceps, .bodyweight),
-        Spec("Plyo Dip", .bodyweight, .triceps, .bodyweight, .plyometric),
     ]
 
     static let legs: [Spec] = [
@@ -97,14 +89,13 @@ enum ExerciseLibrary {
         Spec("Bulgarian Split Squat", .lift, .legs, .dumbbell),
         Spec("Leg Extension", .lift, .legs, .machine),
         Spec("Leg Curl", .lift, .legs, .machine),
-        Spec("Tempo Squat", .lift, .legs, .barbell, .tempo),
-        Spec("Box Jump", .bodyweight, .legs, .bodyweight, .plyometric),
-        Spec("Wall Sit", .hold, .legs, .bodyweight, .isometric),
+        Spec("Box Jump", .bodyweight, .legs, .bodyweight),
+        Spec("Wall Sit", .hold, .legs, .bodyweight),
     ]
 
     static let core: [Spec] = [
-        Spec("Plank", .hold, .core, .bodyweight, .isometric),
-        Spec("Side Plank", .hold, .core, .bodyweight, .isometric),
+        Spec("Plank", .hold, .core, .bodyweight),
+        Spec("Side Plank", .hold, .core, .bodyweight),
         Spec("Hanging Leg Raise", .bodyweight, .core, .bodyweight),
         Spec("Cable Crunch", .lift, .core, .cable),
         Spec("Russian Twist", .bodyweight, .core, .bodyweight),
@@ -114,7 +105,7 @@ enum ExerciseLibrary {
     static let forearms: [Spec] = [
         Spec("Wrist Curl", .lift, .forearms, .dumbbell),
         Spec("Reverse Curl", .lift, .forearms, .barbell),
-        Spec("Dead Hang", .hold, .forearms, .bodyweight, .isometric),
+        Spec("Dead Hang", .hold, .forearms, .bodyweight),
         Spec("Farmer's Carry", .hold, .forearms, .dumbbell),
     ]
 
@@ -130,7 +121,7 @@ enum ExerciseLibrary {
         Spec("Standing Calf Raise", .lift, .calves, .machine),
         Spec("Seated Calf Raise", .lift, .calves, .machine),
         Spec("Single-Leg Calf Raise", .bodyweight, .calves, .bodyweight),
-        Spec("Calf Raise Hold", .hold, .calves, .bodyweight, .isometric),
+        Spec("Calf Raise Hold", .hold, .calves, .bodyweight),
     ]
 
     static let erg: [Spec] = [
@@ -151,7 +142,6 @@ enum ExerciseLibrary {
             let exercise = Exercise(
                 name: spec.name,
                 type: spec.type,
-                modality: spec.modality,
                 muscleGroup: spec.muscleGroup,
                 equipment: spec.equipment,
                 isUserCreated: false

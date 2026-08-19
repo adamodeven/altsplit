@@ -42,7 +42,7 @@ struct ExercisePickerView: View {
     }
 
     private func subtitle(for exercise: Exercise) -> String {
-        [exercise.muscleGroup?.displayName, exercise.type.displayName, exercise.modality.displayName]
+        [exercise.muscleGroup?.displayName, exercise.type.displayName]
             .compactMap { $0 }
             .joined(separator: " · ")
     }

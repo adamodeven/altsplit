@@ -43,7 +43,7 @@ struct DayResolverTests {
         let context = ModelContext(container)
 
         func exercise(_ name: String, _ group: MuscleGroup) -> Exercise {
-            let ex = Exercise(name: name, type: .lift, modality: .standard, muscleGroup: group)
+            let ex = Exercise(name: name, type: .lift, muscleGroup: group)
             context.insert(ex)
             return ex
         }
