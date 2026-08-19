@@ -17,7 +17,7 @@ struct HomeView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
+            Group {
                 if let program = programs.first {
                     content(for: program)
                         .padding(.horizontal)
@@ -28,7 +28,6 @@ struct HomeView: View {
                         systemImage: "figure.strengthtraining.traditional",
                         description: Text("The default split hasn't been seeded.")
                     )
-                    .padding(.top, 80)
                 }
             }
             .navigationTitle("AltSplit")
@@ -49,11 +48,11 @@ struct HomeView: View {
                     if !today.isRest { showingWorkout = true }
                 }
                 .accessibilityIdentifier("workoutBox")
+                .frame(maxHeight: .infinity)
 
                 HStack(spacing: 16) {
                     SupplementBox(
                         title: "Protein",
-                        symbol: "fork.knife",
                         isOn: todaysLog?.protein ?? false,
                         streak: streak(\.protein),
                         detail: streakDetail(streak(\.protein)),
@@ -63,15 +62,24 @@ struct HomeView: View {
                     }
                     SupplementBox(
                         title: "Creatine",
-                        symbol: "pill.fill",
                         isOn: todaysLog?.creatine ?? false,
                         streak: streak(\.creatine),
-                        detail: complianceDetail(\.creatine),
+                        detail: streakDetail(streak(\.creatine)),
                         identifier: "supplementBox.creatine"
                     ) {
                         toggle(\.creatine)
                     }
+                    SupplementBox(
+                        title: "Multivitamin",
+                        isOn: todaysLog?.multivitamin ?? false,
+                        streak: streak(\.multivitamin),
+                        detail: streakDetail(streak(\.multivitamin)),
+                        identifier: "supplementBox.multivitamin"
+                    ) {
+                        toggle(\.multivitamin)
+                    }
                 }
+                .frame(maxHeight: .infinity)
 
                 CheckInBox(
                     program: program,
@@ -80,7 +88,9 @@ struct HomeView: View {
                     onTapNotDue: { selection = .progress }
                 )
                 .accessibilityIdentifier("checkInBox")
+                .frame(maxHeight: .infinity)
             }
+            .frame(maxHeight: .infinity)
             .padding(.bottom, 24)
         }
         .fullScreenCover(isPresented: $showingWorkout) {
@@ -132,16 +142,5 @@ struct HomeView: View {
 
     private func streakDetail(_ streak: Int) -> String {
         streak == 1 ? "1 day streak" : "\(streak) day streak"
-    }
-
-    /// 30-day consistency, e.g. "26 / 30 days".
-    private func complianceDetail(_ keyPath: KeyPath<SupplementLog, Bool>) -> String {
-        let calendar = Calendar.current
-        let startOfToday = calendar.startOfDay(for: .now)
-        guard let windowStart = calendar.date(byAdding: .day, value: -29, to: startOfToday) else {
-            return "—"
-        }
-        let taken = supplementLogs.filter { $0.day >= windowStart && $0[keyPath: keyPath] }.count
-        return "\(taken) / 30 days"
     }
 }

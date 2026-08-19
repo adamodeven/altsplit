@@ -19,10 +19,11 @@ struct ProgressTabView: View {
                 .pickerStyle(.segmented)
                 .padding()
 
-                switch section {
-                case .body: BodyProgressView()
-                case .lifting: LiftingProgressView()
+                TabView(selection: $section) {
+                    BodyProgressView().tag(Section.body)
+                    LiftingProgressView().tag(Section.lifting)
                 }
+                .tabViewStyle(.page(indexDisplayMode: .never))
             }
             .navigationTitle("Progress")
             .tabBarMinimizeBehavior(.onScrollDown)

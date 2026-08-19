@@ -115,6 +115,21 @@ struct DayResolver {
     /// shoulder exercises. That needs no additional data entry and guarantees
     /// the extra volume is a different stimulus rather than a repeat of what
     /// was already done on Tuesday.
+    /// Exercises drawn from the day that normally trains `focus`, for the
+    /// given source phase. Empty if no such day exists or it has no matching
+    /// work. Shared between live resolution and the Day Editor's preview of
+    /// what a double day will actually train.
+    func borrowedDoubleExercises(for focus: MuscleGroup, sourcePhase: Phase) -> [PlannedExercise] {
+        let sourceDay = program.days.first { day in
+            day.slotKind.isTrainingDay
+                && day.slotKind != .double
+                && day.groups.contains(focus)
+        }
+        return sourceDay?
+            .pool(for: sourcePhase)
+            .filter { $0.exercise?.muscleGroup == focus } ?? []
+    }
+
     private func resolveDouble(
         template: DayTemplate,
         date: Date,
@@ -123,17 +138,7 @@ struct DayResolver {
     ) -> ResolvedDay {
         let focus = program.currentFocus
         let sourcePhase = phase.other
-
-        // The day that normally trains the focused group.
-        let sourceDay = program.days.first { day in
-            day.slotKind.isTrainingDay
-                && day.slotKind != .double
-                && day.groups.contains(focus)
-        }
-
-        let borrowed = sourceDay?
-            .pool(for: sourcePhase)
-            .filter { $0.exercise?.muscleGroup == focus } ?? []
+        let borrowed = borrowedDoubleExercises(for: focus, sourcePhase: sourcePhase)
 
         // Fall back to whatever the double day itself defines, so a focus
         // group with no matching source work still yields a session rather

@@ -31,13 +31,15 @@ struct CheckInBox: View {
         Button(action: isDue ? onTapDue : onTapNotDue) {
             VStack(alignment: .leading, spacing: 4) {
                 if isDue {
-                    Text("WEIGH IN + PHOTO DUE")
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.secondary)
-                    Text("Cycle \(cycleIndex + 1) · last: \(lastWeightSummary)")
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        Image(systemName: "camera.fill")
+                            .font(.title3)
+                        Text("Check-In Due")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                    }
+                    Text("Weigh in + photo · Cycle \(cycleIndex + 1) · last: \(lastWeightSummary)")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
                 } else {
                     HStack(alignment: .firstTextBaseline, spacing: 6) {
                         Text(currentWeightText)
@@ -50,11 +52,18 @@ struct CheckInBox: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .padding(20)
+            .contentShape(BentoBoxStyle.shape)
         }
         .buttonStyle(.plain)
-        .glassEffect(Glass.regular.interactive(), in: .rect(corners: .concentric))
+        .frame(maxHeight: .infinity)
+        .glassEffect(glass, in: BentoBoxStyle.shape)
+    }
+
+    private var glass: Glass {
+        let base = Glass.regular.interactive()
+        return isDue ? base.tint(.accentColor) : base
     }
 
     private var lastWeightSummary: String {

@@ -90,6 +90,14 @@ final class HomeFlowUITests: XCTestCase {
         XCTAssertTrue(checkInBox.waitForExistence(timeout: 5))
     }
 
+    func testLongPressingWorkoutBoxShowsPreviewMenu() {
+        let app = launchApp()
+        let workoutBox = app.buttons["workoutBox"]
+        XCTAssertTrue(workoutBox.waitForExistence(timeout: 5))
+        workoutBox.press(forDuration: 1.0)
+        XCTAssertTrue(app.buttons["Start Workout"].waitForExistence(timeout: 3))
+    }
+
     func testTabsSwitchBetweenPlaceholderScreens() {
         let app = launchApp()
         XCTAssertTrue(app.buttons["workoutBox"].waitForExistence(timeout: 5))

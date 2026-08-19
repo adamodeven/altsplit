@@ -17,8 +17,17 @@ struct WorkoutSessionView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
+    @Query(sort: \SetEntry.completedAt, order: .reverse) private var completedEntries: [SetEntry]
+
     @State private var session: WorkoutSession?
     @State private var groups: [ExerciseLogGroup] = []
+    @State private var startedAt = Date.now
+
+    @State private var restRemaining: Int?
+    @State private var restTotal: Int = 0
+    @State private var restTask: Task<Void, Never>?
+
+    @FocusState private var focusedField: SetField?
 
     @State private var cardioDistance = ""
     @State private var cardioMinutes = ""
@@ -40,9 +49,22 @@ struct WorkoutSessionView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { discardAndDismiss() }
                 }
+                ToolbarItem(placement: .principal) {
+                    ElapsedTimeLabel(start: startedAt)
+                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Finish") { finish() }
                         .fontWeight(.semibold)
+                }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Next") { advanceFocus() }
+                        .disabled(!hasNextField)
+                }
+            }
+            .safeAreaInset(edge: .bottom) {
+                if let restRemaining {
+                    RestTimerBanner(remaining: restRemaining, total: restTotal, onSkip: skipRest)
                 }
             }
         }
@@ -56,7 +78,10 @@ struct WorkoutSessionView: View {
                     ForEach(group.entries) { entry in
                         SetRowView(
                             entry: entry,
-                            type: group.planned.exercise?.type ?? .lift
+                            type: group.planned.exercise?.type ?? .lift,
+                            previous: previousEntry(for: group.planned.exercise, setIndex: entry.setIndex),
+                            onComplete: { startRest(seconds: group.planned.restSeconds) },
+                            focusedField: $focusedField
                         )
                     }
                     if let notes = group.planned.notes, !notes.isEmpty {
@@ -107,6 +132,7 @@ struct WorkoutSessionView: View {
             startedAt: .now
         )
         modelContext.insert(newSession)
+        startedAt = newSession.startedAt ?? .now
 
         if day.slotKind != .cardio {
             var built: [ExerciseLogGroup] = []
@@ -157,9 +183,125 @@ struct WorkoutSessionView: View {
     /// Cascade delete rules on `WorkoutSession` take the entries and any
     /// cardio result with it — an abandoned session leaves nothing behind.
     private func discardAndDismiss() {
+        restTask?.cancel()
         if let session {
             modelContext.delete(session)
         }
         dismiss()
+    }
+
+    // MARK: - Previous performance
+
+    /// Last time this exercise was logged, preferring the same set index so
+    /// "set 2" suggests what set 2 was last time rather than set 1's number.
+    /// Excludes sets from this in-progress session.
+    private func previousEntry(for exercise: Exercise?, setIndex: Int) -> SetEntry? {
+        guard let exercise else { return nil }
+        let currentIDs = Set(groups.flatMap(\.entries).map(\.persistentModelID))
+        let candidates = completedEntries.filter {
+            $0.exercise?.persistentModelID == exercise.persistentModelID
+                && !currentIDs.contains($0.persistentModelID)
+        }
+        return candidates.first { $0.setIndex == setIndex } ?? candidates.first
+    }
+
+    // MARK: - Keyboard focus
+
+    private var orderedFields: [SetField] {
+        groups.flatMap { group -> [SetField] in
+            let type = group.planned.exercise?.type ?? .lift
+            return group.entries.flatMap { entry -> [SetField] in
+                switch type {
+                case .lift: [.weight(entry.persistentModelID), .reps(entry.persistentModelID)]
+                case .bodyweight: [.reps(entry.persistentModelID), .weight(entry.persistentModelID)]
+                case .hold: [.duration(entry.persistentModelID), .weight(entry.persistentModelID)]
+                case .erg, .cardio: []
+                }
+            }
+        }
+    }
+
+    private var hasNextField: Bool {
+        guard let focusedField, let index = orderedFields.firstIndex(of: focusedField) else { return false }
+        return index + 1 < orderedFields.count
+    }
+
+    private func advanceFocus() {
+        guard let focusedField, let index = orderedFields.firstIndex(of: focusedField) else { return }
+        let nextIndex = index + 1
+        self.focusedField = nextIndex < orderedFields.count ? orderedFields[nextIndex] : nil
+    }
+
+    // MARK: - Rest timer
+
+    private func startRest(seconds: Int) {
+        restTask?.cancel()
+        guard seconds > 0 else {
+            restRemaining = nil
+            return
+        }
+        restTotal = seconds
+        restRemaining = seconds
+        restTask = Task {
+            while true {
+                try? await Task.sleep(for: .seconds(1))
+                if Task.isCancelled { return }
+                guard let remaining = restRemaining, remaining > 1 else {
+                    restRemaining = nil
+                    return
+                }
+                restRemaining = remaining - 1
+            }
+        }
+    }
+
+    private func skipRest() {
+        restTask?.cancel()
+        restRemaining = nil
+    }
+}
+
+/// Live-updating elapsed time since the session started, shown in the
+/// navigation bar so there's always a clock running during the workout.
+private struct ElapsedTimeLabel: View {
+    let start: Date
+
+    var body: some View {
+        TimelineView(.periodic(from: start, by: 1)) { context in
+            Text(formatted(context.date.timeIntervalSince(start)))
+                .font(.subheadline.monospacedDigit())
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private func formatted(_ interval: TimeInterval) -> String {
+        let seconds = max(0, Int(interval))
+        return String(format: "%d:%02d", seconds / 60, seconds % 60)
+    }
+}
+
+/// Countdown shown after a set is checked off, so the next set starts on
+/// time without having to eyeball a phone clock between sets.
+private struct RestTimerBanner: View {
+    let remaining: Int
+    let total: Int
+    let onSkip: () -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "timer")
+                .foregroundStyle(.secondary)
+            Text("Rest · \(remaining)s")
+                .font(.headline.monospacedDigit())
+            ProgressView(value: Double(total - remaining), total: Double(max(total, 1)))
+                .frame(maxWidth: 80)
+            Spacer()
+            Button("Skip", action: onSkip)
+                .buttonStyle(.bordered)
+        }
+        .padding()
+        .glassEffect(Glass.regular, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .padding(.horizontal)
+        .padding(.bottom, 8)
     }
 }

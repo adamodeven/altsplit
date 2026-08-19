@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		020CA1711A6FD2E1784AE5A9 /* TestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDBD8890073484C15640FDE /* TestSupport.swift */; };
 		036CC31EED59A96321978720 /* CheckInBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154C894836A16F5B4C8F61E9 /* CheckInBox.swift */; };
+		7AAA0E4731F75BAF4ECC1D08 /* BentoBoxStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD08E6BA8A4C4BD26FA71F47 /* BentoBoxStyle.swift */; };
 		04220B037FDA541CB02915E4 /* ProgressTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D41DDFCD179ECFC5D2EA5EC4 /* ProgressTabView.swift */; };
 		04A56F43E6C1A69F3B28C590 /* ExercisePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B16B8FEA34012A71FC5EBEAF /* ExercisePickerView.swift */; };
 		099F1ED510ADED6BA7E9031F /* CheckInFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7268FF78605362FED5D51BE3 /* CheckInFlowUITests.swift */; };
@@ -85,6 +86,7 @@
 		0C13840D4D3FA4426A499F87 /* ExerciseLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseLibrary.swift; sourceTree = "<group>"; };
 		0F07564B78F5A1BB94470B70 /* WorkoutBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutBox.swift; sourceTree = "<group>"; };
 		154C894836A16F5B4C8F61E9 /* CheckInBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInBox.swift; sourceTree = "<group>"; };
+		FD08E6BA8A4C4BD26FA71F47 /* BentoBoxStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BentoBoxStyle.swift; sourceTree = "<group>"; };
 		18BF39A3BB8E08B1A4A6F2AD /* CheckInCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInCaptureView.swift; sourceTree = "<group>"; };
 		193A12AB828EB22395DC55D9 /* CameraPreviewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewRepresentable.swift; sourceTree = "<group>"; };
 		1B3950A9AC13587BD6D43855 /* HomeFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFlowUITests.swift; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 		3BE888A94AAAF94EB30FB7CC /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				FD08E6BA8A4C4BD26FA71F47 /* BentoBoxStyle.swift */,
 				154C894836A16F5B4C8F61E9 /* CheckInBox.swift */,
 				3702EAA81564675FF409E19C /* HomeView.swift */,
 				C5B62E2E2D9CFD35602C7AB3 /* SupplementBox.swift */,
@@ -435,6 +438,7 @@
 				876155CB05A622806BD3AE58 /* CameraPreviewRepresentable.swift in Sources */,
 				978A2D3A12631B05B5A4AD0A /* CameraSessionController.swift in Sources */,
 				036CC31EED59A96321978720 /* CheckInBox.swift in Sources */,
+				7AAA0E4731F75BAF4ECC1D08 /* BentoBoxStyle.swift in Sources */,
 				C5B047FD6079098D2D676930 /* CheckInCaptureView.swift in Sources */,
 				A791B072968277B63B97C92D /* DayEditorView.swift in Sources */,
 				CC6E193DCE2166CDC6B73910 /* DayResolver.swift in Sources */,

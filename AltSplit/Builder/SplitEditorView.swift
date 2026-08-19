@@ -17,7 +17,7 @@ struct SplitEditorView: View {
             Section("Week") {
                 ForEach(sortedDays, id: \.persistentModelID) { day in
                     NavigationLink {
-                        DayEditorView(day: day)
+                        DayEditorView(day: day, program: program)
                     } label: {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(day.weekday.displayName)
