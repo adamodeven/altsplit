@@ -2,6 +2,8 @@
 
 Working notes on turning AltSplit into something others can use, with a paid unlock. Nothing here is implemented yet — this is a plan to revisit later.
 
+Would want to add supersets, cloudkit account sync on pro version 
+
 ## Apple's payment system (the basics)
 
 - **In-App Purchase (IAP)** is required for any digital feature/content unlocked within the app (premium features, subscriptions, one-time unlocks). Apple handles payment processing, receipts, and refunds.

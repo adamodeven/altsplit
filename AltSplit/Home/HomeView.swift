@@ -14,6 +14,7 @@ struct HomeView: View {
 
     @State private var showingWorkout = false
     @State private var showingCheckIn = false
+    @State private var activeWorkout = ActiveWorkoutState()
 
     var body: some View {
         NavigationStack {
@@ -44,7 +45,7 @@ struct HomeView: View {
 
         GlassEffectContainer {
             VStack(spacing: 16) {
-                WorkoutBox(day: today) {
+                WorkoutBox(day: today, isInProgress: activeWorkout.hasActiveSession) {
                     if !today.isRest { showingWorkout = true }
                 }
                 .accessibilityIdentifier("workoutBox")
@@ -94,7 +95,9 @@ struct HomeView: View {
             .padding(.bottom, 24)
         }
         .fullScreenCover(isPresented: $showingWorkout) {
-            WorkoutSessionView(day: today)
+            WorkoutSessionView(day: today, state: activeWorkout) {
+                showingWorkout = false
+            }
         }
         .sheet(isPresented: $showingCheckIn) {
             CheckInCaptureView(program: program, previousCheckIn: checkIns.first)

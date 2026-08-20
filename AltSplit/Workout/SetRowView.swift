@@ -29,6 +29,10 @@ struct SetRowView: View {
 
     var focusedField: FocusState<SetField?>.Binding
 
+    /// Bumped by the parent to shake this row — e.g. when Finish is tapped
+    /// but this set is checked off without a weight/rep value logged.
+    var shakeTrigger: Int = 0
+
     /// Local editing buffer for the weight field. Source of truth for what's
     /// on screen while typing — `weightBinding` only pushes to the model
     /// once the text parses as a full `Double`, so a partial number like a
@@ -43,7 +47,8 @@ struct SetRowView: View {
         previous: SetEntry?,
         onComplete: @escaping () -> Void = {},
         onUncomplete: @escaping () -> Void = {},
-        focusedField: FocusState<SetField?>.Binding
+        focusedField: FocusState<SetField?>.Binding,
+        shakeTrigger: Int = 0
     ) {
         self.entry = entry
         self.type = type
@@ -52,6 +57,7 @@ struct SetRowView: View {
         self.onComplete = onComplete
         self.onUncomplete = onUncomplete
         self.focusedField = focusedField
+        self.shakeTrigger = shakeTrigger
         _weightText = State(initialValue: entry.weight(in: unit).map { String(format: "%g", $0) } ?? "")
     }
 
@@ -61,6 +67,7 @@ struct SetRowView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .frame(width: 52, alignment: .leading)
+                .accessibilityIdentifier("setLabel")
 
             fields
 
@@ -81,8 +88,10 @@ struct SetRowView: View {
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier("setCheckmark")
+            .accessibilityAddTraits(entry.isComplete ? .isSelected : [])
         }
         .listRowBackground(rowFill)
+        .shake(trigger: shakeTrigger)
         .sensoryFeedback(.success, trigger: entry.isComplete) { _, isComplete in isComplete }
         .onChange(of: unit) {
             weightText = entry.weight(in: unit).map { String(format: "%g", $0) } ?? ""
@@ -204,5 +213,36 @@ struct SetRowView: View {
             get: { entry.duration.map { String(Int($0)) } ?? "" },
             set: { entry.duration = $0.isEmpty ? nil : TimeInterval($0) }
         )
+    }
+}
+
+/// A handful of quick left-right keyframes rather than a single spring —
+/// explicit steps read as an unmistakable "no, look here" wiggle instead of
+/// a subtle wobble that's easy to miss in a list of otherwise-still rows.
+private struct ShakeModifier: ViewModifier {
+    let trigger: Int
+    @State private var offset: CGFloat = 0
+
+    func body(content: Content) -> some View {
+        content
+            .offset(x: offset)
+            .onChange(of: trigger) { _, newValue in
+                guard newValue != 0 else { return }
+                let amount: CGFloat = 14
+                let step = 0.06
+                withAnimation(.linear(duration: step)) { offset = amount }
+                withAnimation(.linear(duration: step).delay(step)) { offset = -amount }
+                withAnimation(.linear(duration: step).delay(step * 2)) { offset = amount }
+                withAnimation(.linear(duration: step).delay(step * 3)) { offset = -amount }
+                withAnimation(.linear(duration: step).delay(step * 4)) { offset = 0 }
+            }
+    }
+}
+
+extension View {
+    /// Shakes the view once each time `trigger` changes — used to draw
+    /// attention to a set that's checked off but missing a required value.
+    func shake(trigger: Int) -> some View {
+        modifier(ShakeModifier(trigger: trigger))
     }
 }

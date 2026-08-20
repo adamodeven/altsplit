@@ -84,9 +84,26 @@ final class DayTemplate {
         set { weekdayRaw = newValue.rawValue }
     }
 
+    /// Derived from the muscle groups of whatever's actually in the pool, so
+    /// the split editor never needs a separate manual picker that could
+    /// drift from the exercises selected.
+    ///
+    /// `.double` days are the one exception: their pool is only a fallback
+    /// used when nothing matches the dynamic `Program.currentFocus` (see
+    /// `DayResolver.resolveDouble`), so deriving from it would hard-code
+    /// whatever the fallback happens to train. Those keep the stored,
+    /// manually-set value instead — empty means "use the dynamic focus."
     var groups: [MuscleGroup] {
-        get { groupsRaw.compactMap(MuscleGroup.init(rawValue:)) }
+        get {
+            guard slotKind == .double else { return derivedGroups }
+            return groupsRaw.compactMap(MuscleGroup.init(rawValue:))
+        }
         set { groupsRaw = newValue.map(\.rawValue) }
+    }
+
+    private var derivedGroups: [MuscleGroup] {
+        let present = Set((poolA + poolB).compactMap { $0.exercise?.muscleGroup })
+        return MuscleGroup.allCases.filter(present.contains)
     }
 
     var slotKind: SlotKind {

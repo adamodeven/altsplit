@@ -18,9 +18,15 @@ struct DayEditorView: View {
                         Text(kind.displayName).tag(kind)
                     }
                 }
-                NavigationLink {
-                    MuscleGroupPickerView(selection: $day.groups)
-                } label: {
+                if day.slotKind == .double {
+                    // The only slot kind where groups aren't derived from the
+                    // pool — see `DayTemplate.groups`.
+                    NavigationLink {
+                        MuscleGroupPickerView(selection: $day.groups)
+                    } label: {
+                        LabeledContent("Groups", value: groupsSummary)
+                    }
+                } else if day.slotKind.isTrainingDay {
                     LabeledContent("Groups", value: groupsSummary)
                 }
             }
@@ -42,7 +48,7 @@ struct DayEditorView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { EditButton() }
         .sheet(isPresented: $showingExercisePicker) {
-            ExercisePickerView { exercise in
+            ExercisePickerView(allowedTypes: day.slotKind.allowedExerciseTypes) { exercise in
                 addExercise(exercise, to: addTargetPhase)
             }
         }

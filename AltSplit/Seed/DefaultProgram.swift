@@ -54,7 +54,6 @@ enum DefaultProgram {
 
         let monday = DayTemplate(
             weekday: .monday,
-            groups: [.biceps, .back],
             slotKind: .lifting,
             poolA: [
                 reps("Deadlift", order: 0, sets: 3, reps: 5...5, rest: 150),
@@ -77,7 +76,6 @@ enum DefaultProgram {
 
         let tuesday = DayTemplate(
             weekday: .tuesday,
-            groups: [.legs, .shoulders],
             slotKind: .lifting,
             poolA: [
                 reps("Back Squat", order: 0, sets: 4, reps: 5...8, rest: 150),
@@ -99,7 +97,6 @@ enum DefaultProgram {
 
         let wednesday = DayTemplate(
             weekday: .wednesday,
-            groups: [.chest, .triceps],
             slotKind: .lifting,
             poolA: [
                 reps("Barbell Bench Press", order: 0, sets: 4, reps: 5...8, rest: 150),
@@ -118,13 +115,12 @@ enum DefaultProgram {
 
         // MARK: Thursday — rest
 
-        let thursday = DayTemplate(weekday: .thursday, groups: [], slotKind: .rest)
+        let thursday = DayTemplate(weekday: .thursday, slotKind: .rest)
 
         // MARK: Friday — erg
 
         let friday = DayTemplate(
             weekday: .friday,
-            groups: [],
             slotKind: .cardio,
             poolA: [erg("5k Erg Steady State", order: 0, distanceMeters: 5000)],
             poolB: [erg("Erg Intervals", order: 0, distanceMeters: 4000)]
@@ -150,7 +146,7 @@ enum DefaultProgram {
 
         // MARK: Sunday — rest
 
-        let sunday = DayTemplate(weekday: .sunday, groups: [], slotKind: .rest)
+        let sunday = DayTemplate(weekday: .sunday, slotKind: .rest)
 
         let days = [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
         for day in days {

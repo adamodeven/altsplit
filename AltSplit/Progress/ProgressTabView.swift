@@ -17,7 +17,9 @@ struct ProgressTabView: View {
                     ForEach(Section.allCases) { Text($0.rawValue).tag($0) }
                 }
                 .pickerStyle(.segmented)
-                .padding()
+                .padding(.horizontal)
+                .padding(.top, 8)
+                .padding(.bottom)
 
                 TabView(selection: $section) {
                     BodyProgressView().tag(Section.body)

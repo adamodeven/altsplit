@@ -6,6 +6,7 @@ import SwiftUI
 /// state, geometry never moves.
 struct WorkoutBox: View {
     let day: ResolvedDay
+    var isInProgress: Bool = false
     let onTap: () -> Void
 
     var body: some View {
@@ -49,7 +50,7 @@ struct WorkoutBox: View {
             Text(day.title)
                 .font(.title2)
                 .fontWeight(.bold)
-            Text(day.subtitle)
+            Text(isInProgress ? "In progress · tap to resume" : day.subtitle)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }

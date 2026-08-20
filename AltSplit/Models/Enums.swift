@@ -183,6 +183,18 @@ enum SlotKind: String, Codable, CaseIterable, Sendable {
     }
 
     var isTrainingDay: Bool { self != .rest }
+
+    /// Which `ExerciseType`s make sense to plan on a day of this kind. The
+    /// workout tracker picks its top-level form (cardio vs. per-set rows)
+    /// from the day's slot kind, so an erg exercise slotted into a lifting
+    /// day renders no input fields at all rather than the cardio form.
+    var allowedExerciseTypes: [ExerciseType] {
+        switch self {
+        case .lifting, .double: [.lift, .bodyweight, .hold]
+        case .cardio: [.erg, .cardio]
+        case .rest: ExerciseType.allCases
+        }
+    }
 }
 
 enum SessionStatus: String, Codable, CaseIterable, Sendable {

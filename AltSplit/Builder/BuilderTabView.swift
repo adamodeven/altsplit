@@ -17,6 +17,7 @@ struct BuilderTabView: View {
                     ExerciseLibraryView()
                 }
             }
+            .contentMargins(.top, 8, for: .scrollContent)
             .navigationTitle("Builder")
             .tabBarMinimizeBehavior(.onScrollDown)
         }

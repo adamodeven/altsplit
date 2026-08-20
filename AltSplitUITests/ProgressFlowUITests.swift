@@ -22,7 +22,11 @@ final class ProgressFlowUITests: XCTestCase {
         XCTAssertTrue(workoutBox.waitForExistence(timeout: 5))
         workoutBox.tap()
 
-        guard app.buttons["Finish"].waitForExistence(timeout: 2) else {
+        // Finish only replaces Minimize once every set is checked off, so on
+        // any day with more than the one set this test logs, Minimize is
+        // what's showing right after opening the workout.
+        let minimizeButton = app.buttons["Minimize"]
+        guard minimizeButton.waitForExistence(timeout: 2) || app.buttons["Finish"].exists else {
             return // rest day today — nothing to log
         }
 
@@ -38,7 +42,17 @@ final class ProgressFlowUITests: XCTestCase {
 
         app.navigationBars.firstMatch.tap() // dismiss keyboard
         app.buttons.matching(identifier: "setCheckmark").firstMatch.tap()
-        app.buttons["Finish"].tap()
+
+        // With other sets on the day left unchecked, end the workout early
+        // via the same "Save & End Workout" escape hatch behind Cancel that
+        // a real user would use.
+        if app.buttons["Finish"].exists {
+            app.buttons["Finish"].tap()
+        } else {
+            app.buttons["Cancel"].tap()
+            XCTAssertTrue(app.buttons["Save & End Workout"].waitForExistence(timeout: 2))
+            app.buttons["Save & End Workout"].tap()
+        }
 
         XCTAssertTrue(workoutBox.waitForExistence(timeout: 5))
 

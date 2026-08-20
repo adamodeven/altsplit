@@ -2,7 +2,13 @@ import SwiftUI
 import SwiftData
 
 /// Sheet for adding an exercise from the library to a day's pool.
+///
+/// Only exercises whose `type` fits `allowedTypes` are listed — a day's
+/// slot kind decides which input fields the workout tracker shows
+/// (weight/reps for a lift, distance/time for cardio), so an exercise whose
+/// type doesn't match the day would log with the wrong fields.
 struct ExercisePickerView: View {
+    let allowedTypes: [ExerciseType]
     let onSelect: (Exercise) -> Void
 
     @Query(sort: \Exercise.name) private var exercises: [Exercise]
@@ -37,8 +43,10 @@ struct ExercisePickerView: View {
     }
 
     private var filtered: [Exercise] {
-        guard !searchText.isEmpty else { return exercises }
-        return exercises.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+        exercises.filter { exercise in
+            allowedTypes.contains(exercise.type)
+                && (searchText.isEmpty || exercise.name.localizedCaseInsensitiveContains(searchText))
+        }
     }
 
     private func subtitle(for exercise: Exercise) -> String {

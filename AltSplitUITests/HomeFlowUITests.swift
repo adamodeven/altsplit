@@ -20,8 +20,11 @@ final class HomeFlowUITests: XCTestCase {
         XCTAssertTrue(workoutBox.waitForExistence(timeout: 5))
         workoutBox.tap()
 
+        // Finish only replaces Minimize once every set is checked off, so
+        // right after opening either one signals a training day.
         let finishButton = app.buttons["Finish"]
-        if finishButton.waitForExistence(timeout: 2) {
+        let minimizeButton = app.buttons["Minimize"]
+        if finishButton.waitForExistence(timeout: 2) || minimizeButton.exists {
             // Training day: the logger opened. Confirm we can get back out.
             let cancelButton = app.buttons["Cancel"]
             XCTAssertTrue(cancelButton.exists)
@@ -40,7 +43,8 @@ final class HomeFlowUITests: XCTestCase {
         workoutBox.tap()
 
         let finishButton = app.buttons["Finish"]
-        guard finishButton.waitForExistence(timeout: 2) else {
+        let minimizeButton = app.buttons["Minimize"]
+        guard finishButton.waitForExistence(timeout: 2) || minimizeButton.exists else {
             // Rest day today — nothing to log, nothing to assert further.
             return
         }
@@ -60,8 +64,142 @@ final class HomeFlowUITests: XCTestCase {
             checkmarks.firstMatch.tap()
         }
 
-        finishButton.tap()
+        // With other sets on the day left unchecked, end the workout early
+        // via the same "Save & End Workout" escape hatch behind Cancel that
+        // a real user would use.
+        if finishButton.exists {
+            finishButton.tap()
+        } else {
+            app.buttons["Cancel"].tap()
+            XCTAssertTrue(app.buttons["Save & End Workout"].waitForExistence(timeout: 2))
+            app.buttons["Save & End Workout"].tap()
+        }
         XCTAssertTrue(workoutBox.waitForExistence(timeout: 5))
+    }
+
+    func testMinimizingAWorkoutPreservesProgressAndResumes() {
+        let app = launchApp()
+        let workoutBox = app.buttons["workoutBox"]
+        XCTAssertTrue(workoutBox.waitForExistence(timeout: 5))
+        workoutBox.tap()
+
+        let minimizeButton = app.buttons["Minimize"]
+        guard minimizeButton.waitForExistence(timeout: 2) else {
+            return // rest day, or a day with exactly one set — nothing to minimize
+        }
+
+        let checkmarks = app.buttons.matching(identifier: "setCheckmark")
+        XCTAssertTrue(checkmarks.firstMatch.waitForExistence(timeout: 2))
+        checkmarks.firstMatch.tap()
+
+        // Minimize hides the logger without ending the session.
+        minimizeButton.tap()
+        XCTAssertTrue(workoutBox.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["In progress · tap to resume"].waitForExistence(timeout: 3))
+
+        // Visiting another tab and coming back doesn't lose anything either.
+        app.tabBars.buttons["Progress"].tap()
+        XCTAssertTrue(app.navigationBars["Progress"].waitForExistence(timeout: 3))
+        app.tabBars.buttons["Home"].tap()
+        XCTAssertTrue(workoutBox.waitForExistence(timeout: 3))
+
+        // Reopening resumes the same session — the set checked before
+        // minimizing is still checked, not reset to a fresh workout.
+        workoutBox.tap()
+        XCTAssertTrue(app.navigationBars.firstMatch.waitForExistence(timeout: 3))
+        let firstCheckmark = app.buttons.matching(identifier: "setCheckmark").firstMatch
+        XCTAssertTrue(firstCheckmark.waitForExistence(timeout: 3))
+        XCTAssertTrue(firstCheckmark.isSelected)
+
+        app.buttons["Cancel"].tap()
+        XCTAssertTrue(workoutBox.waitForExistence(timeout: 5))
+    }
+
+    func testDraggingASetLabelReordersSetsWithinAnExercise() {
+        let app = launchApp()
+        let workoutBox = app.buttons["workoutBox"]
+        XCTAssertTrue(workoutBox.waitForExistence(timeout: 5))
+        workoutBox.tap()
+
+        guard app.buttons["Minimize"].waitForExistence(timeout: 2) || app.buttons["Finish"].exists else {
+            return // rest day
+        }
+
+        // Tag the first exercise's first two sets with distinguishable
+        // weights, then drag "Set 1" onto "Set 2" and confirm they swapped —
+        // proof the drop actually landed, not just that the drag picked up.
+        let setLabels = app.staticTexts.matching(identifier: "setLabel")
+        let weightFields = app.textFields["lb"]
+        guard setLabels.count >= 2, weightFields.firstMatch.waitForExistence(timeout: 2) else {
+            return // this exercise only has one set — nothing to reorder
+        }
+
+        let firstWeight = app.textFields.matching(identifier: "lb").element(boundBy: 0)
+        let secondWeight = app.textFields.matching(identifier: "lb").element(boundBy: 1)
+        firstWeight.tap()
+        firstWeight.typeText("101")
+        secondWeight.tap()
+        secondWeight.typeText("202")
+        app.navigationBars.firstMatch.tap() // dismiss keyboard
+
+        XCTAssertEqual(firstWeight.value as? String, "101")
+        XCTAssertEqual(secondWeight.value as? String, "202")
+
+        let firstLabel = setLabels.element(boundBy: 0)
+        let secondLabel = setLabels.element(boundBy: 1)
+        firstLabel.press(forDuration: 0.6, thenDragTo: secondLabel, withVelocity: .slow, thenHoldForDuration: 0.2)
+
+        XCTAssertEqual(app.textFields.matching(identifier: "lb").element(boundBy: 0).value as? String, "202")
+        XCTAssertEqual(app.textFields.matching(identifier: "lb").element(boundBy: 1).value as? String, "101")
+    }
+
+    func testDraggingAnExerciseTitleReordersExercises() {
+        let app = launchApp()
+        let workoutBox = app.buttons["workoutBox"]
+        XCTAssertTrue(workoutBox.waitForExistence(timeout: 5))
+        workoutBox.tap()
+
+        guard app.buttons["Minimize"].waitForExistence(timeout: 2) || app.buttons["Finish"].exists else {
+            return // rest day
+        }
+
+        let titles = app.staticTexts.matching(identifier: "exerciseTitle")
+        guard titles.count >= 2 else {
+            return // only one exercise today — nothing to reorder
+        }
+
+        let firstTitle = titles.element(boundBy: 0).label
+        let secondTitle = titles.element(boundBy: 1).label
+        XCTAssertNotEqual(firstTitle, secondTitle)
+
+        titles.element(boundBy: 0).press(forDuration: 0.6, thenDragTo: titles.element(boundBy: 1))
+
+        let reorderedTitles = app.staticTexts.matching(identifier: "exerciseTitle")
+        XCTAssertEqual(reorderedTitles.element(boundBy: 0).label, secondTitle)
+        XCTAssertEqual(reorderedTitles.element(boundBy: 1).label, firstTitle)
+    }
+
+    func testFlickScrollingStillWorksAndDismissesKeyboard() {
+        let app = launchApp()
+        let workoutBox = app.buttons["workoutBox"]
+        XCTAssertTrue(workoutBox.waitForExistence(timeout: 5))
+        workoutBox.tap()
+
+        guard app.buttons["Minimize"].waitForExistence(timeout: 2) || app.buttons["Finish"].exists else {
+            return // rest day
+        }
+
+        let weightField = app.textFields["lb"].firstMatch
+        guard weightField.waitForExistence(timeout: 2) else { return }
+        weightField.tap()
+        XCTAssertTrue(app.keyboards.element.waitForExistence(timeout: 2))
+
+        // A plain quick swipe (not a held drag) must still reach the list's
+        // own scroll gesture, not get swallowed by the reorder gesture on
+        // the rows it passes over — and that scroll should dismiss the
+        // keyboard interactively, same as any other scrollable form.
+        app.swipeUp()
+        XCTAssertFalse(app.keyboards.element.waitForExistence(timeout: 2))
     }
 
     func testProteinToggleAdvancesStreak() {
