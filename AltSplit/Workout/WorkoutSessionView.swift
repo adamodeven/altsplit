@@ -36,22 +36,6 @@ struct WorkoutSessionView: View {
     @State private var validationHapticToken = 0
     @State private var showingCancelConfirmation = false
 
-    // Reordering is a hand-rolled long-press-then-drag gesture rather than
-    // `.draggable`/`.dropDestination` — those never completed a drop in
-    // testing (the row would visibly pick up but nothing landed), a known
-    // sore spot for system drag sessions inside a `List`. A plain
-    // `DragGesture`, gated behind a long press so it doesn't fight the
-    // list's own scroll, is a normal gesture recognizer and reliably
-    // reorders instead.
-    @State private var draggingEntryID: PersistentIdentifier?
-    @State private var draggingGroupID: PersistentIdentifier?
-    @State private var dragBaseline: CGFloat = 0
-    @State private var liveDragTranslation: CGFloat = 0
-    /// Each row/header's on-screen frame, captured continuously so the
-    /// floating drag ghost (see below) can be placed exactly where the real
-    /// row sits before lifting off from it.
-    @State private var rowFrames: [PersistentIdentifier: CGRect] = [:]
-
     var body: some View {
         NavigationStack {
             Group {
@@ -131,112 +115,50 @@ struct WorkoutSessionView: View {
 
     private var liftForm: some View {
         ScrollViewReader { proxy in
-            ZStack(alignment: .topLeading) {
-                List {
-                    ForEach(Array(state.groups.enumerated()), id: \.element.id) { groupIndex, group in
-                        Section {
-                            ForEach(group.entries) { entry in
-                                SetRowView(
-                                    entry: entry,
-                                    type: group.planned.exercise?.type ?? .lift,
-                                    unit: unit,
-                                    previous: previousEntry(for: group.planned.exercise, setIndex: entry.setIndex),
-                                    onComplete: { state.startRest(seconds: group.planned.restSeconds, sourceEntryID: entry.persistentModelID) },
-                                    onUncomplete: { state.cancelRestIfSource(entry.persistentModelID) },
-                                    focusedField: $focusedField,
-                                    shakeTrigger: entry.persistentModelID == invalidEntryID ? shakeToken : 0
-                                )
-                                .id(entry.persistentModelID)
-                                .opacity(draggingEntryID == entry.persistentModelID ? 0 : 1)
-                                .background(rowFrameReader(id: entry.persistentModelID))
-                                .swipeActions(edge: .trailing) {
-                                    if group.entries.count > 1 {
-                                        Button(role: .destructive) {
-                                            deleteSet(groupID: group.id, entryID: entry.persistentModelID)
-                                        } label: {
-                                            Label("Delete", systemImage: "trash")
-                                        }
+            List {
+                ForEach(state.groups) { group in
+                    Section {
+                        ForEach(group.entries) { entry in
+                            SetRowView(
+                                entry: entry,
+                                type: group.planned.exercise?.type ?? .lift,
+                                unit: unit,
+                                previous: previousEntry(for: group.planned.exercise, setIndex: entry.setIndex),
+                                onComplete: { state.startRest(seconds: group.planned.restSeconds, sourceEntryID: entry.persistentModelID) },
+                                onUncomplete: { state.cancelRestIfSource(entry.persistentModelID) },
+                                focusedField: $focusedField,
+                                shakeTrigger: entry.persistentModelID == invalidEntryID ? shakeToken : 0
+                            )
+                            .id(entry.persistentModelID)
+                            .swipeActions(edge: .trailing) {
+                                if group.entries.count > 1 {
+                                    Button(role: .destructive) {
+                                        deleteSet(groupID: group.id, entryID: entry.persistentModelID)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
                                     }
                                 }
-                                // `.simultaneousGesture` (not `.gesture`) so this
-                                // doesn't claim every touch exclusively — a quick
-                                // swipe still reaches the List's own scroll pan;
-                                // only a genuine hold-then-drag engages this one.
-                                .simultaneousGesture(setReorderGesture(entryID: entry.persistentModelID, groupIndex: groupIndex))
                             }
-                            if let notes = group.planned.notes, !notes.isEmpty {
-                                Text(notes)
-                                    .font(.footnote)
-                                    .foregroundStyle(.secondary)
-                            }
-                        } header: {
-                            HStack(spacing: 4) {
-                                Text(group.planned.displayTitle)
-                                    .padding(.vertical, 6)
-                                    .contentShape(Rectangle())
-                                    .opacity(draggingGroupID == group.id ? 0 : 1)
-                                    .background(rowFrameReader(id: group.id))
-                                    .accessibilityIdentifier("exerciseTitle")
-                                    .simultaneousGesture(groupReorderGesture(groupID: group.id))
-                                Spacer()
-                                Button(action: { removeSet(from: group.id) }) {
-                                    Image(systemName: "minus.circle")
-                                }
-                                .disabled(group.entries.count <= 1)
-                                .accessibilityLabel("Remove set")
-
-                                Button(action: { addSet(to: group.id) }) {
-                                    Image(systemName: "plus.circle")
-                                }
-                                .accessibilityLabel("Add set")
-                            }
-                            .buttonStyle(.plain)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .imageScale(.medium)
                         }
+                        if let notes = group.planned.notes, !notes.isEmpty {
+                            Text(notes)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                    } header: {
+                        ExerciseGroupHeader(
+                            title: group.planned.displayTitle,
+                            canRemoveSet: group.entries.count > 1,
+                            onAddSet: { addSet(to: group.id) },
+                            onRemoveSet: { removeSet(from: group.id) }
+                        )
                     }
                 }
-                .scrollDismissesKeyboard(.interactively)
-                .sensoryFeedback(.selection, trigger: state.groups.map(\.entries.count))
-                .onAppear { scrollProxy = proxy }
-                .onPreferenceChange(RowFramesKey.self) { rowFrames = $0 }
-
-                dragGhost
             }
-            .coordinateSpace(name: "workoutList")
+            .scrollDismissesKeyboard(.interactively)
+            .sensoryFeedback(.selection, trigger: state.groups.map(\.entries.count))
+            .onAppear { scrollProxy = proxy }
         }
-    }
-
-    private func rowFrameReader(id: PersistentIdentifier) -> some View {
-        GeometryReader { geo in
-            Color.clear.preference(key: RowFramesKey.self, value: [id: geo.frame(in: .named("workoutList"))])
-        }
-    }
-
-    /// The dragged row/exercise, rendered floating above the whole list
-    /// (not confined to one List cell, where `zIndex` can't escape) and
-    /// following the raw drag translation directly — no compensation for
-    /// the underlying array reorder needed, since the real row is invisible
-    /// while this stands in for it.
-    @ViewBuilder
-    private var dragGhost: some View {
-        if let id = draggingEntryID, let frame = rowFrames[id], let entry = entry(for: id) {
-            DraggedSetGhost(entry: entry, unit: unit)
-                .frame(width: frame.width)
-                .position(x: frame.midX, y: frame.midY + liveDragTranslation)
-                .allowsHitTesting(false)
-        }
-        if let id = draggingGroupID, let frame = rowFrames[id], let group = state.groups.first(where: { $0.id == id }) {
-            DraggedGroupGhost(title: group.planned.displayTitle)
-                .frame(width: frame.width)
-                .position(x: frame.midX, y: frame.midY + liveDragTranslation)
-                .allowsHitTesting(false)
-        }
-    }
-
-    private func entry(for id: PersistentIdentifier) -> SetEntry? {
-        state.groups.flatMap(\.entries).first { $0.persistentModelID == id }
     }
 
     private var cardioForm: some View {
@@ -432,98 +354,6 @@ struct WorkoutSessionView: View {
         modelContext.delete(entry)
     }
 
-    // MARK: - Local-only reordering
-    //
-    // A hand-rolled long-press-then-drag rather than `.draggable`/
-    // `.dropDestination`: neither ever completed a drop when actually
-    // tested (rows picked up but nothing landed) — a known sore spot for
-    // system drag sessions inside a `List`. This tracks the drag's raw
-    // translation and swaps with the neighbor once it crosses a threshold,
-    // which is just a plain gesture recognizer and reorders reliably.
-
-    /// Reorders sets within one exercise as the drag crosses into a
-    /// neighboring row. Purely an in-memory `SetEntry.setIndex` change on
-    /// this session's own entries — it never touches `PlannedExercise`, so
-    /// it can't leak into next week's plan.
-    private func setReorderGesture(entryID: PersistentIdentifier, groupIndex: Int) -> some Gesture {
-        LongPressGesture(minimumDuration: 0.35)
-            .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .local))
-            .onChanged { value in
-                guard case .second(true, let drag?) = value else { return }
-                if draggingEntryID != entryID {
-                    draggingEntryID = entryID
-                    dragBaseline = 0
-                }
-                liveDragTranslation = drag.translation.height
-
-                let threshold: CGFloat = 44
-                let delta = liveDragTranslation - dragBaseline
-                guard groupIndex < state.groups.count,
-                      let currentIndex = state.groups[groupIndex].entries.firstIndex(where: { $0.persistentModelID == entryID })
-                else { return }
-
-                if delta > threshold, currentIndex < state.groups[groupIndex].entries.count - 1 {
-                    withAnimation(.default) {
-                        state.groups[groupIndex].entries.move(fromOffsets: IndexSet(integer: currentIndex), toOffset: currentIndex + 2)
-                    }
-                    dragBaseline += threshold
-                } else if delta < -threshold, currentIndex > 0 {
-                    withAnimation(.default) {
-                        state.groups[groupIndex].entries.move(fromOffsets: IndexSet(integer: currentIndex), toOffset: currentIndex - 1)
-                    }
-                    dragBaseline -= threshold
-                }
-            }
-            .onEnded { _ in
-                if groupIndex < state.groups.count {
-                    for (position, entry) in state.groups[groupIndex].entries.enumerated() {
-                        entry.setIndex = position
-                    }
-                }
-                draggingEntryID = nil
-                liveDragTranslation = 0
-                dragBaseline = 0
-            }
-    }
-
-    /// Reorders whole exercises as the drag crosses into a neighboring
-    /// section. Only ever mutates `state.groups`, the in-memory list this
-    /// session builds for display — the plan's `PlannedExercise.order` is
-    /// never touched, so this reorder is local to tonight's workout.
-    private func groupReorderGesture(groupID: PersistentIdentifier) -> some Gesture {
-        LongPressGesture(minimumDuration: 0.35)
-            .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .local))
-            .onChanged { value in
-                guard case .second(true, let drag?) = value else { return }
-                if draggingGroupID != groupID {
-                    draggingGroupID = groupID
-                    dragBaseline = 0
-                }
-                liveDragTranslation = drag.translation.height
-
-                let threshold: CGFloat = 70
-                let delta = liveDragTranslation - dragBaseline
-                guard let currentIndex = state.groups.firstIndex(where: { $0.id == groupID }) else { return }
-
-                if delta > threshold, currentIndex < state.groups.count - 1 {
-                    withAnimation(.default) {
-                        state.groups.move(fromOffsets: IndexSet(integer: currentIndex), toOffset: currentIndex + 2)
-                    }
-                    dragBaseline += threshold
-                } else if delta < -threshold, currentIndex > 0 {
-                    withAnimation(.default) {
-                        state.groups.move(fromOffsets: IndexSet(integer: currentIndex), toOffset: currentIndex - 1)
-                    }
-                    dragBaseline -= threshold
-                }
-            }
-            .onEnded { _ in
-                draggingGroupID = nil
-                liveDragTranslation = 0
-                dragBaseline = 0
-            }
-    }
-
     // MARK: - Previous performance
 
     /// Last time this exercise was logged, preferring the same set index so
@@ -537,64 +367,6 @@ struct WorkoutSessionView: View {
                 && !currentIDs.contains($0.persistentModelID)
         }
         return candidates.first { $0.setIndex == setIndex } ?? candidates.first
-    }
-}
-
-private struct RowFramesKey: PreferenceKey {
-    static var defaultValue: [PersistentIdentifier: CGRect] { [:] }
-    static func reduce(value: inout [PersistentIdentifier: CGRect], nextValue: () -> [PersistentIdentifier: CGRect]) {
-        value.merge(nextValue()) { _, new in new }
-    }
-}
-
-/// Floating stand-in for a set row mid-drag — a simplified snapshot rather
-/// than the live interactive row, the same way a system drag preview is a
-/// static image, not the real control.
-private struct DraggedSetGhost: View {
-    let entry: SetEntry
-    let unit: UnitMass
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Text("Set \(entry.setIndex + 1)")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            Spacer()
-            if let weight = entry.weight(in: unit) {
-                Text("\(weight, specifier: "%g") \(unit.symbol)")
-                    .font(.subheadline)
-            }
-            if let reps = entry.reps {
-                Text("× \(reps)")
-                    .font(.subheadline)
-            }
-            Image(systemName: entry.isComplete ? "checkmark.circle.fill" : "circle")
-                .foregroundStyle(entry.isComplete ? .green : .secondary)
-        }
-        .padding(.horizontal, 16)
-        .frame(height: 44)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-        .shadow(color: .black.opacity(0.25), radius: 12, y: 6)
-        .scaleEffect(1.03)
-    }
-}
-
-/// Floating stand-in for an exercise header mid-drag.
-private struct DraggedGroupGhost: View {
-    let title: String
-
-    var body: some View {
-        HStack {
-            Text(title)
-                .font(.subheadline)
-                .fontWeight(.semibold)
-            Spacer()
-        }
-        .padding(.horizontal, 16)
-        .frame(height: 36)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-        .shadow(color: .black.opacity(0.25), radius: 12, y: 6)
-        .scaleEffect(1.03)
     }
 }
 
@@ -643,3 +415,33 @@ private struct RestTimerBanner: View {
     }
 }
 
+/// Section header for a logged exercise, with inline +/- controls so the
+/// number of sets can be adjusted live as the workout is performed instead
+/// of only ever matching the planned target.
+private struct ExerciseGroupHeader: View {
+    let title: String
+    let canRemoveSet: Bool
+    let onAddSet: () -> Void
+    let onRemoveSet: () -> Void
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Text(title)
+            Spacer()
+            Button(action: onRemoveSet) {
+                Image(systemName: "minus.circle")
+            }
+            .disabled(!canRemoveSet)
+            .accessibilityLabel("Remove set")
+
+            Button(action: onAddSet) {
+                Image(systemName: "plus.circle")
+            }
+            .accessibilityLabel("Add set")
+        }
+        .buttonStyle(.plain)
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
+        .imageScale(.medium)
+    }
+}

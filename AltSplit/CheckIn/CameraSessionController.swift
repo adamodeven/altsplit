@@ -38,6 +38,13 @@ final class CameraSessionController: NSObject, ObservableObject {
 
     func capturePhoto(completion: @escaping (UIImage?) -> Void) {
         self.completion = completion
+        // The preview layer auto-mirrors the front camera feed, but the photo
+        // output connection doesn't by default — without this the saved photo
+        // comes out flipped relative to what was shown before the shutter.
+        if let connection = output.connection(with: .video), connection.isVideoMirroringSupported {
+            connection.automaticallyAdjustsVideoMirroring = false
+            connection.isVideoMirrored = true
+        }
         output.capturePhoto(with: AVCapturePhotoSettings(), delegate: self)
     }
 }

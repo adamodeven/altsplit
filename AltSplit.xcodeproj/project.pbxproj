@@ -59,6 +59,9 @@
 		DA505CBAFAA6FF65D07681BE /* CameraCaptureBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E02D24C2406BDE06551F728 /* CameraCaptureBox.swift */; };
 		DC6AF587AF9F4C90693C9D3E /* ExerciseLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66118DA20D8A9068D952A67 /* ExerciseLibraryTests.swift */; };
 		E0EB854E767F51A957BFA7A7 /* LiftingProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB7A8F5C0967BFB26516DF5 /* LiftingProgressView.swift */; };
+		6600C82D349543228490DA38 /* WorkoutHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D13985E31FB0447EB97B0AA2 /* WorkoutHistoryView.swift */; };
+		556488DB3BD04530992AD3F3 /* WorkoutHistoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70977510FB3C4A84B8C62BC8 /* WorkoutHistoryDetailView.swift */; };
+		B6B7B8B35A0B4928BB404709 /* ErgProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAF988C23AB4C0D98CE9243 /* ErgProgressView.swift */; };
 		E356D0F72A6B88DBC667B6AD /* PhotoStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB264E93FD3F2B3FD07DC854 /* PhotoStore.swift */; };
 		EF1273B770998F14441D2BA2 /* AppSeeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3355095682FF870374549BA5 /* AppSeeder.swift */; };
 		F657D4D1BEFC2F1D55FB153A /* DefaultProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3770836EA904378275E6A532 /* DefaultProgram.swift */; };
@@ -129,6 +132,9 @@
 		C66118DA20D8A9068D952A67 /* ExerciseLibraryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseLibraryTests.swift; sourceTree = "<group>"; };
 		CB264E93FD3F2B3FD07DC854 /* PhotoStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoStore.swift; sourceTree = "<group>"; };
 		CEB7A8F5C0967BFB26516DF5 /* LiftingProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiftingProgressView.swift; sourceTree = "<group>"; };
+		D13985E31FB0447EB97B0AA2 /* WorkoutHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutHistoryView.swift; sourceTree = "<group>"; };
+		70977510FB3C4A84B8C62BC8 /* WorkoutHistoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutHistoryDetailView.swift; sourceTree = "<group>"; };
+		7FAF988C23AB4C0D98CE9243 /* ErgProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErgProgressView.swift; sourceTree = "<group>"; };
 		D41DDFCD179ECFC5D2EA5EC4 /* ProgressTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressTabView.swift; sourceTree = "<group>"; };
 		D557A6224E6DDEBAC95BF109 /* PhaseCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseCalculator.swift; sourceTree = "<group>"; };
 		D671F2EA861CE40EF8A73D7B /* BuilderFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuilderFlowUITests.swift; sourceTree = "<group>"; };
@@ -319,7 +325,10 @@
 			children = (
 				3C0E635E41938D2F1D2F1B01 /* BodyProgressView.swift */,
 				CEB7A8F5C0967BFB26516DF5 /* LiftingProgressView.swift */,
+				7FAF988C23AB4C0D98CE9243 /* ErgProgressView.swift */,
 				D41DDFCD179ECFC5D2EA5EC4 /* ProgressTabView.swift */,
+				D13985E31FB0447EB97B0AA2 /* WorkoutHistoryView.swift */,
+				70977510FB3C4A84B8C62BC8 /* WorkoutHistoryDetailView.swift */,
 			);
 			path = Progress;
 			sourceTree = "<group>";
@@ -472,6 +481,9 @@
 				F663848F34ED64E74CDF2F76 /* HomeView.swift in Sources */,
 				E0EB854E767F51A957BFA7A7 /* LiftingProgressView.swift in Sources */,
 				67747728053A07C97B16835B /* Models.swift in Sources */,
+				6600C82D349543228490DA38 /* WorkoutHistoryView.swift in Sources */,
+				556488DB3BD04530992AD3F3 /* WorkoutHistoryDetailView.swift in Sources */,
+				B6B7B8B35A0B4928BB404709 /* ErgProgressView.swift in Sources */,
 				6E677552BFD9D62D85DF2408 /* MuscleGroupPickerView.swift in Sources */,
 				AE7B075D8F55A94F1403CAB6 /* NotificationDelegate.swift in Sources */,
 				D63C1A3A9D428F63D17B1E5C /* NotificationScheduler.swift in Sources */,
@@ -669,7 +681,6 @@
 				DEVELOPMENT_TEAM = 8KB3AN9HSZ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = AltSplit;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_NSAlarmKitUsageDescription = "Used to schedule workout and weigh-in alarms that break through silent mode.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Used to take your check-in progress photo.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Face ID protects your check-in photos.";
@@ -753,7 +764,6 @@
 				DEVELOPMENT_TEAM = 8KB3AN9HSZ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = AltSplit;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_NSAlarmKitUsageDescription = "Used to schedule workout and weigh-in alarms that break through silent mode.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Used to take your check-in progress photo.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Face ID protects your check-in photos.";

@@ -55,6 +55,28 @@ struct DayEditorView: View {
         .sheet(item: $editingPlanned) { planned in
             PlannedExerciseEditorView(planned: planned)
         }
+        .onChange(of: day.slotKind) { _, newValue in
+            removeIncompatibleExercises(for: newValue)
+        }
+    }
+
+    /// Drops any pool entries whose exercise type no longer fits the new
+    /// session type — e.g. switching Lifting → Cardio would otherwise leave
+    /// weight/rep exercises sitting in a day the workout tracker now logs
+    /// as distance/time, showing neither set of fields correctly.
+    private func removeIncompatibleExercises(for slotKind: SlotKind) {
+        let allowed = slotKind.allowedExerciseTypes
+        let incompatibleA = day.poolA.filter { !allowed.contains($0.exercise?.type ?? .lift) }
+        let incompatibleB = day.poolB.filter { !allowed.contains($0.exercise?.type ?? .lift) }
+        guard !incompatibleA.isEmpty || !incompatibleB.isEmpty else { return }
+
+        let idsToRemove = Set((incompatibleA + incompatibleB).map(\.persistentModelID))
+        day.poolA.removeAll { idsToRemove.contains($0.persistentModelID) }
+        day.poolB.removeAll { idsToRemove.contains($0.persistentModelID) }
+        for planned in incompatibleA + incompatibleB {
+            modelContext.delete(planned)
+        }
+        try? modelContext.save()
     }
 
     private var groupsSummary: String {

@@ -168,4 +168,62 @@ struct ProgressCalculatorTests {
         #expect(comparison.phaseAAverageVolume == 450) // (500+400)/2
         #expect(comparison.phaseBAverageVolume == 240)
     }
+
+    // MARK: - Erg
+
+    @Test func splitTrendComputesSecondsPer500mInChronologicalOrder() throws {
+        let context = try makeContext()
+        let later = WorkoutSession(date: date(7), phase: .a, weekday: .monday, status: .completed)
+        let earlier = WorkoutSession(date: date(0), phase: .a, weekday: .monday, status: .completed)
+        context.insert(later); context.insert(earlier)
+        // 2000m in 8:00 -> 2:00/500m split.
+        later.cardioResult = CardioResult(distanceMeters: 2000, duration: 480)
+        // 1000m in 4:30 -> 2:15/500m split.
+        earlier.cardioResult = CardioResult(distanceMeters: 1000, duration: 270)
+
+        let points = ProgressCalculator.splitTrend(sessions: [later, earlier])
+        #expect(points.count == 2)
+        #expect(points[0].date == date(0))
+        #expect(abs(points[0].split - 135) < 0.001)
+        #expect(points[1].date == date(7))
+        #expect(abs(points[1].split - 120) < 0.001)
+    }
+
+    @Test func splitTrendSkipsSessionsWithoutACardioResult() throws {
+        let context = try makeContext()
+        let session = WorkoutSession(date: date(0), phase: .a, weekday: .monday, status: .completed)
+        context.insert(session)
+        #expect(ProgressCalculator.splitTrend(sessions: [session]).isEmpty)
+    }
+
+    @Test func distanceByCycleSumsMetersPerCycle() throws {
+        let anchor = date(0)
+        let session0 = WorkoutSession(date: date(0), phase: .a, weekday: .monday, status: .completed)
+        let session0b = WorkoutSession(date: date(3), phase: .a, weekday: .thursday, status: .completed)
+        let session1 = WorkoutSession(date: date(14), phase: .a, weekday: .monday, status: .completed)
+        session0.cardioResult = CardioResult(distanceMeters: 1500, duration: 300)
+        session0b.cardioResult = CardioResult(distanceMeters: 500, duration: 100)
+        session1.cardioResult = CardioResult(distanceMeters: 2000, duration: 400)
+
+        let result = ProgressCalculator.distanceByCycle(sessions: [session0, session0b, session1], anchor: anchor)
+        #expect(result.first { $0.cycleIndex == 0 }?.totalMeters == 2000)
+        #expect(result.first { $0.cycleIndex == 1 }?.totalMeters == 2000)
+    }
+
+    @Test func ergPersonalRecordsOnlyFireWhenSplitImproves() throws {
+        let context = try makeContext()
+        let s1 = WorkoutSession(date: date(0), phase: .a, weekday: .monday, status: .completed)
+        let s2 = WorkoutSession(date: date(7), phase: .a, weekday: .monday, status: .completed)
+        let s3 = WorkoutSession(date: date(14), phase: .a, weekday: .monday, status: .completed)
+        context.insert(s1); context.insert(s2); context.insert(s3)
+        s1.cardioResult = CardioResult(distanceMeters: 2000, duration: 480) // 2:00/500m -> PR
+        s2.cardioResult = CardioResult(distanceMeters: 2000, duration: 500) // slower -> not a PR
+        s3.cardioResult = CardioResult(distanceMeters: 2000, duration: 460) // 1:55/500m -> PR
+
+        let records = ProgressCalculator.ergPersonalRecords(sessions: [s1, s2, s3])
+        #expect(records.count == 2)
+        // Sorted newest first.
+        #expect(records[0].date == date(14))
+        #expect(records[1].date == date(0))
+    }
 }

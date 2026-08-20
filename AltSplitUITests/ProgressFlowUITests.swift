@@ -63,6 +63,48 @@ final class ProgressFlowUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["135 lb × 8"].waitForExistence(timeout: 3))
     }
 
+    func testFinishingAWorkoutShowsUpInHistoryAndDetailShowsWhatWasLogged() {
+        let app = launchApp()
+        let workoutBox = app.buttons["workoutBox"]
+        XCTAssertTrue(workoutBox.waitForExistence(timeout: 5))
+        workoutBox.tap()
+
+        guard app.buttons["Minimize"].waitForExistence(timeout: 2) || app.buttons["Finish"].exists else {
+            return // rest day today — nothing to log
+        }
+
+        let weightField = app.textFields["lb"].firstMatch
+        XCTAssertTrue(weightField.waitForExistence(timeout: 2))
+        weightField.tap()
+        weightField.typeText("135")
+
+        let repsField = app.textFields["reps"].firstMatch
+        XCTAssertTrue(repsField.waitForExistence(timeout: 2))
+        repsField.tap()
+        repsField.typeText("8")
+
+        app.navigationBars.firstMatch.tap() // dismiss keyboard
+        app.buttons.matching(identifier: "setCheckmark").firstMatch.tap()
+
+        if app.buttons["Finish"].exists {
+            app.buttons["Finish"].tap()
+        } else {
+            app.buttons["Cancel"].tap()
+            XCTAssertTrue(app.buttons["Save & End Workout"].waitForExistence(timeout: 2))
+            app.buttons["Save & End Workout"].tap()
+        }
+
+        XCTAssertTrue(workoutBox.waitForExistence(timeout: 5))
+
+        app.tabBars.buttons["Progress"].tap()
+        app.buttons["History"].tap()
+        XCTAssertFalse(app.staticTexts["No Workouts Yet"].exists)
+
+        app.cells.firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["Set 1"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["135 lb × 8"].waitForExistence(timeout: 3))
+    }
+
     func testSavingACheckInShowsUpInBodyProgress() {
         let app = launchApp()
         app.buttons["checkInBox"].tap()

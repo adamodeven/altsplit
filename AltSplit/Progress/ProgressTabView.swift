@@ -5,6 +5,8 @@ struct ProgressTabView: View {
     private enum Section: String, CaseIterable, Identifiable {
         case body = "Body"
         case lifting = "Lifting"
+        case erg = "Erg"
+        case history = "History"
         var id: String { rawValue }
     }
 
@@ -24,6 +26,8 @@ struct ProgressTabView: View {
                 TabView(selection: $section) {
                     BodyProgressView().tag(Section.body)
                     LiftingProgressView().tag(Section.lifting)
+                    ErgProgressView().tag(Section.erg)
+                    WorkoutHistoryView().tag(Section.history)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
             }

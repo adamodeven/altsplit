@@ -109,9 +109,9 @@ struct SetRowView: View {
     /// out from the tap instead of an arbitrary left-to-right wipe.
     ///
     /// This scales rather than resizes: a `GeometryReader`-driven width
-    /// inside `.listRowBackground` sets up a layout feedback loop (the row
-    /// sizes itself from the background, the background sizes itself from
-    /// the row) that crashed SwiftUI's AsyncRenderer outright. `scaleEffect`
+    /// inside `.listRowBackground` sets up a layout feedback loop (the row sizes
+    /// itself from the background, the background sizes itself from the
+    /// row) that crashed SwiftUI's AsyncRenderer outright. `scaleEffect`
     /// is a draw-time transform on a fixed-size shape, so there's no
     /// re-layout each frame.
     private var rowFill: some View {

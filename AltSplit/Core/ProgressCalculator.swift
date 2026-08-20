@@ -176,4 +176,74 @@ enum ProgressCalculator {
             phaseBAverageVolume: bCount > 0 ? bTotal / Double(bCount) : 0
         )
     }
+
+    // MARK: - Erg
+
+    struct SplitPoint {
+        let date: Date
+        let split: TimeInterval
+        let distanceMeters: Int
+    }
+
+    /// Avg split (sec/500m) per logged erg session, across time — the erg
+    /// equivalent of the 1RM trend, lower is better.
+    static func splitTrend(sessions: [WorkoutSession]) -> [SplitPoint] {
+        sessions
+            .compactMap { session -> SplitPoint? in
+                guard let result = session.cardioResult, let split = result.avgSplit else { return nil }
+                return SplitPoint(date: session.date, split: split, distanceMeters: result.distanceMeters)
+            }
+            .sorted { $0.date < $1.date }
+    }
+
+    struct DistanceByCycle: Identifiable {
+        var id: Int { cycleIndex }
+        let cycleIndex: Int
+        let totalMeters: Int
+    }
+
+    static func distanceByCycle(sessions: [WorkoutSession], anchor: Date) -> [DistanceByCycle] {
+        let calendar = PhaseCalculator.splitCalendar()
+        var totals: [Int: Int] = [:]
+
+        for session in sessions {
+            guard let result = session.cardioResult else { continue }
+            let cycle = PhaseCalculator.cycleIndex(on: session.date, anchor: anchor, calendar: calendar)
+            totals[cycle, default: 0] += result.distanceMeters
+        }
+
+        return totals
+            .map { DistanceByCycle(cycleIndex: $0.key, totalMeters: $0.value) }
+            .sorted { $0.cycleIndex < $1.cycleIndex }
+    }
+
+    struct ErgPersonalRecord: Identifiable {
+        var id: String { date.timeIntervalSince1970.description }
+        let date: Date
+        let summary: String
+    }
+
+    /// Every erg session whose split beat the fastest split seen so far,
+    /// walking forward through time — same "beat the previous best" feed as
+    /// `personalRecords`, keyed on pace instead of volume.
+    static func ergPersonalRecords(sessions: [WorkoutSession]) -> [ErgPersonalRecord] {
+        let chronological = sessions
+            .compactMap { session -> (session: WorkoutSession, result: CardioResult)? in
+                guard let result = session.cardioResult, result.avgSplit != nil else { return nil }
+                return (session, result)
+            }
+            .sorted { $0.session.date < $1.session.date }
+
+        var best = TimeInterval.greatestFiniteMagnitude
+        var records: [ErgPersonalRecord] = []
+        for pair in chronological {
+            guard let split = pair.result.avgSplit, split < best else { continue }
+            best = split
+            records.append(ErgPersonalRecord(
+                date: pair.session.date,
+                summary: "\(pair.result.formattedSplit) /500m · \(pair.result.distanceMeters) m"
+            ))
+        }
+        return records.sorted { $0.date > $1.date }
+    }
 }

@@ -124,14 +124,25 @@ struct HomeView: View {
         Task { await AccountabilityCoordinator.refreshBadge(context: modelContext) }
     }
 
-    /// Consecutive days (walking back from today) with `keyPath` true. A
-    /// missing day — no log at all — breaks the streak, same as a false
-    /// value: honest data means the streak can go down.
+    /// Count of consecutive prior days with `keyPath` true, walking back
+    /// from the most recent day that already counts. Today isn't included
+    /// until it's checked off — but an unchecked today doesn't zero out a
+    /// streak built through yesterday either; the streak only breaks once
+    /// a day passes without being checked off.
     private func streak(_ keyPath: KeyPath<SupplementLog, Bool>) -> Int {
         let calendar = Calendar.current
         var day = calendar.startOfDay(for: .now)
         var count = 0
         var index = 0
+
+        let todayCompleted = todaysLog?[keyPath: keyPath] ?? false
+        if !todayCompleted {
+            day = calendar.date(byAdding: .day, value: -1, to: day) ?? day
+            if todaysLog != nil {
+                index = 1 // today's row exists but doesn't count for this keyPath
+            }
+        }
+
         while index < supplementLogs.count {
             let log = supplementLogs[index]
             guard calendar.isDate(log.day, inSameDayAs: day) else { break }
@@ -140,6 +151,7 @@ struct HomeView: View {
             index += 1
             day = calendar.date(byAdding: .day, value: -1, to: day) ?? day
         }
+
         return count
     }
 
